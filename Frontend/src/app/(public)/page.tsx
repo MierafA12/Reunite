@@ -1,27 +1,25 @@
-import React from "react";
-import Header from "../components/ui/Header";
-import heroImage from "../../../public/images/reunite.jpeg";
-import StatCard from "../components/ui/StateCard";
+import Header from "@/app/components/layout/Header";
+import StatCard from "@/app/components/ui/StateCard";
+import heroImage from "@/../public/images/reunite.jpeg";
+import Services from "@/app/components/page/services";
+import ShortNumberPage from "@/app/components/ui/shortNumber";
+import Footer from "@/app/components/layout/footer";
 
-const Home: React.FC = () => {
+const Home = () => {
     return (
+        <>
         <div className="relative min-h-screen">
-
-            {/* Background Image */}
             <div className="absolute inset-0">
                 <img
                     src={heroImage.src}
-                    alt="Community"
+                    alt="Community helping to find missing people"
                     className="w-full h-full object-cover"
                 />
-                {/* Overlay */}
                 <div className="absolute inset-0 bg-dark/70" />
             </div>
 
-            {/* Header */}
             <Header />
 
-            {/* Content */}
             <div className="relative z-10 flex items-center min-h-screen">
                 <div className="max-w-7xl mx-auto px-6 text-white w-full">
 
@@ -35,9 +33,8 @@ const Home: React.FC = () => {
                         information, and reunite families.
                     </p>
 
-                    {/* Buttons */}
                     <div className="mt-8 flex flex-wrap gap-4">
-                        <button className="bg-secondary text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition">
+                        <button className="bg-secondary text-dark px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition">
                             Report Missing Person
                         </button>
 
@@ -46,7 +43,6 @@ const Home: React.FC = () => {
                         </button>
                     </div>
 
-                    {/* Stats */}
                     <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl">
                         <StatCard title="1,200+" subtitle="Cases Reported" />
                         <StatCard title="680+" subtitle="People Found" />
@@ -55,8 +51,13 @@ const Home: React.FC = () => {
 
                 </div>
             </div>
-        </div>
-    );
-};
+        </div>    
 
+         <Services/>
+         <ShortNumberPage/>
+         <Footer/>
+         </>
+    );    
+};
+ 
 export default Home;
