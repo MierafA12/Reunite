@@ -5,7 +5,7 @@ interface StatCardProps {
   subtitle: string;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ title, subtitle }) => {
+const StatCard = ({ title, subtitle }: StatCardProps) => {
   return (
     <div className="bg-white/10 backdrop-blur rounded-xl p-6 text-center">
       <h2 className="text-3xl font-bold text-secondary">{title}</h2>
