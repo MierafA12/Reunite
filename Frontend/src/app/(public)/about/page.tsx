@@ -1,4 +1,5 @@
 import Header from "@/app/components/layout/Header";
+import Footer from "@/app/components/layout/footer";
 import aboutHero from "@/../public/images/reunite.jpeg";
 
 const AboutPage: React.FC = () => {
@@ -146,7 +147,7 @@ const AboutPage: React.FC = () => {
           </button>
         </div>
       </section>
-
+        <Footer/>
     </div>
   );
 };
