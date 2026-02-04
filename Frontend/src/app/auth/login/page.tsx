@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { User, Lock, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Button from "@/app/components/ui/Button";
 
 interface LoginForm {
   email: string;
@@ -139,13 +140,12 @@ export default function LoginPage() {
               </Link>
             </div>
 
-            {/* Submit Button */}
-            <button
+            <Button
               type="submit"
-              className="w-full bg-primary hover:bg-primary-dark text-white py-4 rounded-xl font-bold tracking-wide shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-xl"
             >
               Sign In
-            </button>
+            </Button>
 
             {/* Register Link */}
             <div className="pt-6 text-center">

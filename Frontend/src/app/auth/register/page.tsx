@@ -1,11 +1,11 @@
 "use client";
 
-import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { X, ArrowLeft } from "lucide-react";
+import Button from "@/app/components/ui/Button";
 
 interface RegisterForm {
   firstName: string;
@@ -201,12 +201,12 @@ export default function RegisterPage() {
               </span>
             </div>
 
-            <button
+            <Button
               type="submit"
-              className="w-full bg-primary hover:bg-primary-dark text-white py-3 rounded-xl font-semibold transition"
+              className="w-full py-3 rounded-xl"
             >
               Open Account
-            </button>
+            </Button>
 
             {/* Login Link */}
             <p className="text-sm text-center text-gray-500">
@@ -220,23 +220,6 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      {/* Tailwind Animations */}
-      <style jsx>{`
-        @keyframes fadeInUp {
-          0% { opacity: 0; transform: translateY(20px); }
-          100% { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fadeInUp {
-          animation: fadeInUp 1s ease-out forwards;
-        }
-        @keyframes bounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
-        }
-        .animate-bounce {
-          animation: bounce 2s infinite;
-        }
-      `}</style>
     </div>
   );
 }
