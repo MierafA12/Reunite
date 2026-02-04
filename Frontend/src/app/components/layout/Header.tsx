@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Button from "../ui/Button";
 
 const Header = () => {
   const router = useRouter();
@@ -33,12 +34,12 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center gap-4">
-          <Link
+          <Button
             href="/auth/register"
-            className="hidden md:block bg-secondary text-dark px-5 py-2 rounded-lg font-medium"
+            
           >
               Report Missing
-            </Link>
+            </Button>
           <Menu className="md:hidden text-white cursor-pointer" />
         </div>
       </div>
