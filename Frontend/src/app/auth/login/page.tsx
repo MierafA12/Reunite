@@ -7,6 +7,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { User, Lock, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Button from "@/app/components/ui/Button";
+import { useAuth } from "@/app/context/AuthContext";
 
 interface LoginForm {
   email: string;
@@ -15,6 +16,7 @@ interface LoginForm {
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const {
     register,
     handleSubmit,
@@ -23,7 +25,13 @@ export default function LoginPage() {
 
   const onSubmit: SubmitHandler<LoginForm> = (data) => {
     console.log("Login form submitted:", data);
-    // TODO: Add authentication logic here
+    // Simulate successful login
+    login({
+      id: "1",
+      name: "John Doe",
+      email: data.email
+    });
+    router.push("/dashboard/user");
   };
 
   return (
@@ -142,6 +150,7 @@ export default function LoginPage() {
 
             <Button
               type="submit"
+              onClick={handleSubmit(onSubmit)}
               className="w-full py-3 rounded-xl"
             >
               Sign In

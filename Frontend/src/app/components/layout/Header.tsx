@@ -5,9 +5,11 @@ import Link from "next/link";
 import { Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Button from "../ui/Button";
+import { useAuth } from "@/app/context/AuthContext";
 
 const Header = () => {
   const router = useRouter();
+  const { isLoggedIn, logout } = useAuth();
 
   return (
     <header className="absolute top-0 left-0 w-full z-50">
@@ -36,10 +38,28 @@ const Header = () => {
         <div className="flex items-center gap-4">
           <Button
             href="/dashboard/user/report"
-
+            variant="secondary"
           >
             Report Missing
           </Button>
+
+          {isLoggedIn ? (
+            <Button
+              variant="outline"
+              onClick={logout}
+              className="text-white border-white/20 hover:bg-white/10"
+            >
+              Logout
+            </Button>
+          ) : (
+            <Button
+              href="/auth/login"
+              variant="ghost"
+              className="text-white hover:text-secondary"
+            >
+              Sign In
+            </Button>
+          )}
           <Menu className="md:hidden text-white cursor-pointer" />
         </div>
       </div>
