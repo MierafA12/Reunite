@@ -35,11 +35,11 @@ const Header = () => {
 
         <div className="flex items-center gap-4">
           <Button
-            href="/auth/register"
-            
+            href="/dashboard/user/report"
+
           >
-              Report Missing
-            </Button>
+            Report Missing
+          </Button>
           <Menu className="md:hidden text-white cursor-pointer" />
         </div>
       </div>
