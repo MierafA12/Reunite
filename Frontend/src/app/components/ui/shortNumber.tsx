@@ -1,6 +1,7 @@
 
 import { PhoneCall, Users, MessageCircle } from "lucide-react";
 import assistanceImage from "../../../../public/images/1212.png"; 
+import Button from "./Button";
 
 const ShortNumberPage: React.FC = () => {
   return (
@@ -72,9 +73,9 @@ const ShortNumberPage: React.FC = () => {
             bring your loved ones back home safely.
           </p>
 
-          <button className="mt-8 bg-secondary text-white px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition">
+          <Button className="m-8 bg-secondary text-white px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition">
             Call 1212 Now
-          </button>
+          </Button>
         </div>
       </div>
     </div>

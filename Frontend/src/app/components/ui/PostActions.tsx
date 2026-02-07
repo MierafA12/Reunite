@@ -4,7 +4,6 @@ import React from "react";
 import { Edit3, Trash2 } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
 import Button from "./Button";
-import Link from "next/link";
 
 interface PostActionsProps {
     ownerId: string;
@@ -21,16 +20,17 @@ export default function PostActions({ ownerId, postId }: PostActionsProps): Reac
 
     return (
         <div className="flex gap-4 animate-fadeIn">
-            <Link
-                href={`/dashboard/user/report/edit/${postId}`}
-                className="bg-white/5 border border-white/10 text-white hover:bg-white/10 px-6 py-2 rounded-xl flex items-center gap-2 transition-all font-bold text-sm"
+            <Button
+                variant="outline"
+                className="bg-white/5 border-white/10 text-white hover:bg-white/10 px-6 py-2 rounded-xl flex items-center gap-2"
+                onClick={() => alert(`Editing post ${postId}`)}
             >
                 <Edit3 className="w-4 h-4" />
                 Edit Report
-            </Link>
+            </Button>
             <Button
                 variant="danger"
-                className="bg-danger/10 border border-danger/20 text-danger hover:bg-danger/20 px-6 py-2 rounded-xl flex items-center gap-2 transition-all font-bold text-sm"
+                className="bg-danger/10 border border-danger/20 text-danger hover:bg-danger/20 px-6 py-2 rounded-xl flex items-center gap-2"
                 onClick={() => confirm("Are you sure you want to delete this report?")}
             >
                 <Trash2 className="w-4 h-4" />

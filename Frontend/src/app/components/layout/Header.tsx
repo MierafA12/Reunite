@@ -3,10 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Menu } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+import Button from "../ui/Button";
+import { useAuth } from "@/app/context/AuthContext";
 
 const Header = () => {
   const router = useRouter();
+  const pathname = usePathname();
+  const { isLoggedIn, logout } = useAuth();
 
   return (
     <header className="absolute top-0 left-0 w-full z-50">
@@ -33,12 +37,33 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center gap-4">
-          <Link
-            href="/auth/register"
-            className="hidden md:block bg-secondary text-dark px-5 py-2 rounded-lg font-medium"
+          <Button
+            href="/dashboard/user/report"
+            variant="secondary"
           >
-              Report Missing
-            </Link>
+            Report Missing
+          </Button>
+
+          {isLoggedIn ? (
+            <div className="flex items-center gap-4">
+              <Link href="/dashboard/user" className="hidden md:block text-white hover:text-secondary transition text-sm font-bold">Dashboard</Link>
+              <Button
+                variant="outline"
+                onClick={logout}
+                className="text-white border-white/20 hover:bg-white/10"
+              >
+                Logout
+              </Button>
+            </div>
+          ) : (
+            <Button
+              href={`/auth/login?callbackUrl=${encodeURIComponent(pathname)}`}
+              variant="ghost"
+              className="text-white hover:text-secondary"
+            >
+              Sign In
+            </Button>
+          )}
           <Menu className="md:hidden text-white cursor-pointer" />
         </div>
       </div>

@@ -1,0 +1,58 @@
+"use client";
+
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+
+interface User {
+    id: string;
+    name: string;
+    email: string;
+}
+
+interface AuthContextType {
+    user: User | null;
+    isLoggedIn: boolean;
+    login: (userData: User) => void;
+    logout: () => void;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+    const [user, setUser] = useState<User | null>(null);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        // Check if user is logged in (simulated with localStorage)
+        const storedUser = localStorage.getItem("reunite_user");
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+            setIsLoggedIn(true);
+        }
+    }, []);
+
+    const login = (userData: User) => {
+        setUser(userData);
+        setIsLoggedIn(true);
+        localStorage.setItem("reunite_user", JSON.stringify(userData));
+    };
+
+    const logout = () => {
+        setUser(null);
+        setIsLoggedIn(false);
+        localStorage.removeItem("reunite_user");
+    };
+
+    return (
+        <AuthContext.Provider value={{ user, isLoggedIn, login, logout }}>
+            {children}
+        </AuthContext.Provider>
+    );
+}
+
+export function useAuth() {
+    const context = useContext(AuthContext);
+    if (context === undefined) {
+        throw new Error("useAuth must be used within an AuthProvider");
+    }
+    return context;
+}

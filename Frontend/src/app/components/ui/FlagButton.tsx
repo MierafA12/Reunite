@@ -6,13 +6,9 @@ import { useAuth } from "@/app/context/AuthContext";
 import Button from "./Button";
 import Link from "next/link";
 
-export default function FlagButton({ ownerId }: { ownerId?: string }): React.ReactNode {
-    const { isLoggedIn, user } = useAuth();
+export default function FlagButton(): React.ReactNode {
+    const { isLoggedIn } = useAuth();
     const [isFlagged, setIsFlagged] = useState<boolean>(false);
-
-    const isOwner = isLoggedIn && user?.id === ownerId;
-
-    if (isOwner) return null;
 
     const handleFlag = (): void => {
         if (!isLoggedIn) return;
