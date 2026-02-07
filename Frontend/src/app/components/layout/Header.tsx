@@ -3,12 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Menu } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Button from "../ui/Button";
 import { useAuth } from "@/app/context/AuthContext";
 
 const Header = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const { isLoggedIn, logout } = useAuth();
 
   return (
@@ -44,16 +45,19 @@ const Header = () => {
           </Button>
 
           {isLoggedIn ? (
-            <Button
-              variant="outline"
-              onClick={logout}
-              className="text-white border-white/20 hover:bg-white/10"
-            >
-              Logout
-            </Button>
+            <div className="flex items-center gap-4">
+              <Link href="/dashboard/user" className="hidden md:block text-white hover:text-secondary transition text-sm font-bold">Dashboard</Link>
+              <Button
+                variant="outline"
+                onClick={logout}
+                className="text-white border-white/20 hover:bg-white/10"
+              >
+                Logout
+              </Button>
+            </div>
           ) : (
             <Button
-              href="/auth/login"
+              href={`/auth/login?callbackUrl=${encodeURIComponent(pathname)}`}
               variant="ghost"
               className="text-white hover:text-secondary"
             >
