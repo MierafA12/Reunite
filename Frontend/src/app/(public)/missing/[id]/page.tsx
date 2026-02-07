@@ -2,12 +2,14 @@ import Image from "next/image";
 import Header from "@/app/components/layout/Header";
 import Footer from "@/app/components/layout/footer";
 import { InfoCard, ImageBox, VideoBox } from "@/app/components/ui/InfoCard";
-import { User, Calendar, MapPin, Flag, ShieldCheck } from "lucide-react";
+import { User, Calendar, MapPin, Flag, ShieldCheck, MessageSquare, ShieldAlert, Send } from "lucide-react";
 import React from "react";
+import Link from "next/link";
 import ReporterCard from "@/app/components/ui/ReporterCard";
-import CommentSection from "@/app/components/ui/CommentSection";
 import FlagButton from "@/app/components/ui/FlagButton";
 import PostActions from "@/app/components/ui/PostActions";
+import SecretConnection from "@/app/components/ui/SecretConnection";
+import Button from "@/app/components/ui/Button";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -39,19 +41,6 @@ const PublicMissingPersonPage = async ({ params }: PageProps) => {
         message: "We are desperately looking for Abebe. If you have any information, please reach out immediately."
     };
 
-    const comments = [
-        {
-            author: "Samy K.",
-            date: "Yesterday at 14:20",
-            text: "I saw someone matching this description near Merkato last week. He seemed a bit disoriented and was asking for directions to the bus station."
-        },
-        {
-            author: "Hana T.",
-            date: "Today at 09:15",
-            text: "Please check the hospitals near Bole area. Sometimes people are taken there if found unconscious."
-        }
-    ];
-
     return (
         <div className="min-h-screen bg-dark text-white font-sans">
             <Header />
@@ -82,7 +71,7 @@ const PublicMissingPersonPage = async ({ params }: PageProps) => {
 
                             <div className="flex items-center gap-4">
                                 <PostActions ownerId={ownerId} postId={id} />
-                                <FlagButton />
+                                <FlagButton ownerId={ownerId} />
                             </div>
                         </div>
 
@@ -124,11 +113,11 @@ const PublicMissingPersonPage = async ({ params }: PageProps) => {
                             <div className="w-1 h-8 bg-secondary rounded-full" />
                             <h2 className="text-3xl font-bold">Details of Disappearance</h2>
                         </div>
-                        <div className="bg-dark-light/20 border border-white/5 rounded-3xl p-8">
-                            <p className="text-gray-300 leading-relaxed text-lg mb-6">
+                        <div className="bg-dark-light/20 border border-white/5 rounded-3xl p-8 leading-relaxed text-gray-300">
+                            <p className="text-lg mb-6">
                                 Abebe was last seen near the Piazza area, specifically close to the old Post Office building, around 4:30 PM. He was wearing a distinctive <span className="text-white font-semibold">bright blue jacket</span> with silver reflectors, black trousers, and white sports shoes.
                             </p>
-                            <p className="text-gray-300 leading-relaxed text-lg">
+                            <p className="text-lg">
                                 He left home to run a quick errand and hasn't been heard from since. His phone has been switched off from 6:00 PM on the same day. He is approximately 175cm tall with a slim build.
                             </p>
                         </div>
@@ -151,8 +140,8 @@ const PublicMissingPersonPage = async ({ params }: PageProps) => {
                         </div>
                     </div>
 
-                    {/* COMMUNITY TIPS */}
-                    <CommentSection comments={comments} />
+                    {/* SECRET CONNECTION SECTION */}
+                    <SecretConnection ownerId={ownerId} personName={person.name} />
                 </div>
 
                 {/* SIDEBAR - REPORTER INFO */}
@@ -162,6 +151,7 @@ const PublicMissingPersonPage = async ({ params }: PageProps) => {
                         initials={reporter.initials}
                         role={reporter.role}
                         message={reporter.message}
+                        ownerId={ownerId}
                     />
                 </aside>
 
