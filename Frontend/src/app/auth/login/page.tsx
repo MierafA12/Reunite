@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { User, Lock, X } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Button from "@/app/components/ui/Button";
 import { useAuth } from "@/app/context/AuthContext";
 
@@ -16,6 +16,8 @@ interface LoginForm {
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
   const { login } = useAuth();
   const {
     register,
@@ -31,7 +33,13 @@ export default function LoginPage() {
       name: "John Doe",
       email: data.email
     });
-    router.push("/dashboard/user");
+
+    // Redirect to callbackUrl if present, otherwise dashboard
+    if (callbackUrl) {
+      router.push(callbackUrl);
+    } else {
+      router.push("/dashboard/user");
+    }
   };
 
   return (
