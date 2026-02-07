@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { X, ArrowLeft } from "lucide-react";
 import Button from "@/app/components/ui/Button";
 
@@ -21,6 +21,9 @@ interface RegisterForm {
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
+
   const {
     register,
     handleSubmit,
@@ -30,6 +33,12 @@ export default function RegisterPage() {
 
   const onSubmit = (data: RegisterForm) => {
     console.log("Register data:", data);
+    // Simulate register and login
+    if (callbackUrl) {
+      router.push(callbackUrl);
+    } else {
+      router.push("/dashboard/user");
+    }
   };
 
   const goBack = () => router.back();
@@ -59,7 +68,7 @@ export default function RegisterPage() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
 
           <div className="relative z-10 flex flex-col h-full justify-between">
-        
+
 
             {/* Welcome Text */}
             <div className="mt-auto animate-fadeInUp">
@@ -211,7 +220,7 @@ export default function RegisterPage() {
             {/* Login Link */}
             <p className="text-sm text-center text-gray-500">
               Already have an account?{" "}
-              <Link href="/auth/login" className="text-primary font-semibold">
+              <Link href={callbackUrl ? `/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/auth/login"} className="text-primary font-semibold">
                 Sign In
               </Link>
             </p>
