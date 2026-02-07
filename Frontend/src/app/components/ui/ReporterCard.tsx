@@ -11,6 +11,7 @@ interface ReporterCardProps {
     initials: string;
     role: string;
     message: string;
+    ownerId: string;
     isVerified?: boolean;
 }
 
@@ -19,9 +20,28 @@ export default function ReporterCard({
     initials,
     role,
     message,
+    ownerId,
     isVerified = true
 }: ReporterCardProps): React.ReactNode {
-    const { isLoggedIn } = useAuth();
+    const { isLoggedIn, user } = useAuth();
+    const isOwner = isLoggedIn && user?.id === ownerId;
+
+    if (isOwner) {
+        return (
+            <div className="bg-dark-light border border-white/5 rounded-3xl p-8 sticky top-24 overflow-hidden relative">
+                <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                    <ShieldCheck className="w-5 h-5 text-secondary" />
+                    Management View
+                </h2>
+                <div className="space-y-4">
+                    <div className="bg-secondary/10 border border-secondary/20 rounded-2xl p-4">
+                        <p className="text-secondary text-sm font-medium">You are the author of this report.</p>
+                        <p className="text-gray-400 text-xs mt-1">Use the tools in the header to update or manage this case.</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-dark-light border border-white/5 rounded-3xl p-8 sticky top-24 overflow-hidden relative">
@@ -50,8 +70,12 @@ export default function ReporterCard({
                 </div>
 
                 {isLoggedIn && (
-                    <Button variant="outline" className="w-full py-4 rounded-2xl font-bold mb-4 bg-white text-dark border-none hover:bg-white/90">
-                        Contact Family
+                    <Button
+                        variant="secondary"
+                        className="w-full py-4 rounded-2xl font-bold mb-4 shadow-lg shadow-secondary/20 hover:scale-[1.02] transition-all"
+                        onClick={() => alert("Initiating secret connection with family...")}
+                    >
+                        Connect Privately
                     </Button>
                 )}
             </div>
@@ -64,7 +88,7 @@ export default function ReporterCard({
                         variant="secondary"
                         className="w-full py-4 rounded-2xl font-bold hover:shadow-lg transition-all"
                     >
-                        Login to Contact
+                        Login to Connect
                     </Button>
                 </div>
             )}
