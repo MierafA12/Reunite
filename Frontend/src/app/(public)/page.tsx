@@ -1,3 +1,5 @@
+"use client";
+
 import Header from "@/app/components/layout/Header";
 import StatCard from "@/app/components/ui/StateCard";
 import heroImage from "@/../public/images/reunite.jpeg";
@@ -5,8 +7,11 @@ import Services from "@/app/components/page/services";
 import ShortNumberPage from "@/app/components/ui/shortNumber";
 import Footer from "@/app/components/layout/footer";
 import Link from "next/link";
+import { useAuth } from "@/app/context/AuthContext";
 
 const Home = () => {
+    const { isLoggedIn } = useAuth();
+
     return (
         <>
             <div className="relative min-h-screen">
@@ -35,7 +40,10 @@ const Home = () => {
                         </p>
 
                         <div className="mt-8 flex flex-wrap gap-4">
-                            <Link href="/dashboard/user/report" className="bg-secondary text-dark px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition">
+                            <Link
+                                href={isLoggedIn ? "/dashboard/user/report" : `/auth/login?callbackUrl=${encodeURIComponent("/dashboard/user/report")}`}
+                                className="bg-secondary text-dark px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition"
+                            >
                                 Report Missing Person
                             </Link>
 
