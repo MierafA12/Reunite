@@ -42,24 +42,27 @@ export default function MissingPage() {
 
             <main className="max-w-7xl mx-auto px-6 pt-32 pb-20">
                 {/* HEADER & SEARCH */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
-                    <div className="max-w-2xl">
-                        <h1 className="text-5xl font-extrabold mb-4 tracking-tight">Missing <span className="text-secondary">Persons</span></h1>
-                        <p className="text-gray-400 text-lg">
-                            Below is a list of people who have been reported missing. Please look through the photos and information carefully. Any detail could be the key to bringing someone home.
+                <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16">
+                    <div className="max-w-2xl text-center md:text-left">
+                        <h1 className="text-4xl md:text-6xl font-black mb-4 tracking-tighter uppercase">
+                            Missing <span className="text-secondary">Persons</span>
+                        </h1>
+                        <p className="text-gray-400 text-base md:text-lg leading-relaxed">
+                            Search through reported cases and help us bring loved ones home. Every bit of information counts toward a successful reunion.
                         </p>
                     </div>
 
-                    <div className="flex items-center gap-3 w-full md:w-auto">
-                        <div className="relative flex-1 md:w-80">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full lg:w-auto">
+                        <div className="relative flex-1 lg:w-96 shadow-2xl">
+                            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-secondary" size={20} />
                             <input
-                                placeholder="Search by name or location..."
-                                className="w-full bg-dark-light border border-white/5 rounded-2xl pl-12 pr-6 py-4 outline-none focus:border-secondary transition-all"
+                                placeholder="Search name or location..."
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl pl-14 pr-6 py-4 outline-none focus:border-secondary transition-all text-white placeholder:text-gray-500"
                             />
                         </div>
-                        <button className="bg-dark-light border border-white/5 p-4 rounded-2xl hover:bg-white/5 transition-colors">
-                            <Filter className="text-gray-400" size={20} />
+                        <button className="flex items-center justify-center gap-2 bg-white/5 border border-white/10 p-4 rounded-2xl hover:bg-secondary hover:text-dark hover:border-secondary transition-all group shadow-xl">
+                            <Filter className="text-secondary group-hover:text-dark transition-colors" size={22} />
+                            <span className="sm:hidden font-bold">Filters</span>
                         </button>
                     </div>
                 </div>
