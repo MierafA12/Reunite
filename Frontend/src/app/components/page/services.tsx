@@ -1,4 +1,3 @@
-import Header from "@/app/components/layout/Header";
 import ServiceCard from "@/app/components/ui/servicesCard";
 import {
   Search,
@@ -11,23 +10,26 @@ import {
 
 const ServicesPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-white text-dark">
-      <Header />
+    <div id="services" className="bg-white text-dark py-20 px-6 overflow-hidden">
+      <div className="max-w-7xl mx-auto">
 
-      <div className="pt-32 max-w-7xl mx-auto px-6">
-
-        {/* Page Header */}
-        <h1 className="text-4xl md:text-5xl font-bold">
-          Our <span className="text-secondary">Services</span>
-        </h1>
-
-        <p className="mt-6 text-gray-600 max-w-3xl text-lg">
-          We provide secure, ethical, and community-driven tools designed to help
-          families locate missing loved ones and reconnect safely.
-        </p>
+        {/* Section Header */}
+        <div className="space-y-4 mb-16">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary/10 border border-secondary/20 text-secondary text-sm font-bold uppercase tracking-wider">
+            <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
+            Our Services
+          </div>
+          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight">
+            How We <span className="text-secondary">Help</span> Families
+          </h2>
+          <p className="mt-4 text-gray-600 max-w-3xl text-lg md:text-xl leading-relaxed">
+            We provide secure, ethical, and community-driven tools designed to help
+            families locate missing loved ones and reconnect safely.
+          </p>
+        </div>
 
         {/* Services Grid */}
-        <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
 
           <ServiceCard
             icon={<Search size={36} />}
