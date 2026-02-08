@@ -1,81 +1,89 @@
-
-import { PhoneCall, Users, MessageCircle } from "lucide-react";
-import assistanceImage from "../../../../public/images/1212.png"; 
+import { PhoneCall, Users, MessageCircle, ArrowRight } from "lucide-react";
+import assistanceImage from "../../../../public/images/1212.png";
 import Button from "./Button";
 
 const ShortNumberPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-white text-dark">
+    <div className="bg-white text-dark py-20 overflow-hidden">
 
-      <div className="relative mt-24">
-        <img
-          src={assistanceImage.src}
-          alt="Support for reporting missing person"
-          className="w-full h-96 object-cover rounded-b-3xl filter brightness-75"
-        />
-        <div className="absolute inset-0 flex flex-col justify-center items-center text-center px-6">
-          <h1 className="text-4xl md:text-5xl font-bold text-white">
-            Call <span className="text-secondary">1212</span> for Assistance
-          </h1>
-          <p className="mt-4 text-gray-200 max-w-2xl">
-            Can’t report online? No worries. Call our short number and our team
-            will assist you in creating a missing person post quickly and securely.
-          </p>
+      {/* Hero Section */}
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="relative rounded-[2rem] overflow-hidden shadow-2xl h-[400px] md:h-[500px]">
+          <img
+            src={assistanceImage.src}
+            alt="Support for reporting missing person"
+            className="w-full h-full object-cover filter brightness-[0.4] transition-transform duration-700 hover:scale-105"
+          />
+          <div className="absolute inset-0 flex flex-col justify-center items-center text-center px-6">
+            <div className="mb-6 p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20">
+              <PhoneCall className="text-secondary" size={48} />
+            </div>
+            <h2 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tighter">
+              Call <span className="text-secondary drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">1212</span> for Help
+            </h2>
+            <p className="text-gray-200 max-w-2xl text-lg md:text-xl font-medium leading-relaxed">
+              Available 24/7. Even without internet access, our team is here to help you report and track missing person cases immediately.
+            </p>
+          </div>
         </div>
       </div>
 
       {/* How It Works Section */}
-      <div className="mt-20 max-w-7xl mx-auto px-6">
-        <h2 className="text-3xl md:text-4xl font-bold text-center">
-          How It Works
-        </h2>
-
-        <p className="mt-4 text-gray-600 text-center max-w-3xl mx-auto">
-          Our short-number service ensures that even if you can’t access the
-          platform online, your loved ones’ information reaches the community safely.
+      <div className="mt-24 max-w-7xl mx-auto px-6 text-center">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary/10 border border-secondary/20 text-secondary text-sm font-bold uppercase tracking-wider mb-6">
+          Offline Assistance
+        </div>
+        <h3 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-6">
+          How the Short Number <span className="text-secondary">Works</span>
+        </h3>
+        <p className="text-gray-600 text-lg md:text-xl max-w-3xl mx-auto mb-16 px-4">
+          Providing an easier way for everyone to report missing persons, whether you're online or offline.
         </p>
 
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="flex flex-col items-center text-center p-6 bg-gray-50 rounded-2xl shadow hover:shadow-lg transition">
-            <PhoneCall className="text-secondary mb-4" size={40} />
-            <h3 className="font-semibold text-lg mb-2">Call Our Short Number</h3>
-            <p className="text-gray-600 text-sm">
-              Dial <span className="font-bold">1212</span> and reach our support team instantly.
-            </p>
-          </div>
-
-          <div className="flex flex-col items-center text-center p-6 bg-gray-50 rounded-2xl shadow hover:shadow-lg transition">
-            <MessageCircle className="text-secondary mb-4" size={40} />
-            <h3 className="font-semibold text-lg mb-2">Provide Missing Person Info</h3>
-            <p className="text-gray-600 text-sm">
-              Share details about your loved one — name, age, last seen location,
-              photos, or any identifying information.
-            </p>
-          </div>
-
-          <div className="flex flex-col items-center text-center p-6 bg-gray-50 rounded-2xl shadow hover:shadow-lg transition">
-            <Users className="text-secondary mb-4" size={40} />
-            <h3 className="font-semibold text-lg mb-2">We Post & Connect</h3>
-            <p className="text-gray-600 text-sm">
-              Our team creates the missing person post on your behalf, shares it
-              on our platform and social channels, and keeps you updated.
-            </p>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+          {[
+            {
+              icon: <PhoneCall size={32} />,
+              title: "Dial 1212",
+              desc: "Reach our dedicated emergency support line from any phone carrier, instantly connecting you with a trained agent."
+            },
+            {
+              icon: <MessageCircle size={32} />,
+              title: "Share Details",
+              desc: "Provide the essential information: name, last seen location, and description. Our agents handle the data entry."
+            },
+            {
+              icon: <Users size={32} />,
+              title: "Immediate Action",
+              desc: "Your report is instantly uploaded to our verified database and broadcasted across our community network."
+            }
+          ].map((item, i) => (
+            <div key={i} className="group p-10 bg-gray-50 rounded-[2.5rem] border border-gray-100 hover:bg-white hover:border-secondary/20 hover:shadow-xl hover:shadow-secondary/5 transition-all duration-300">
+              <div className="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-secondary mb-8 group-hover:scale-110 group-hover:bg-secondary group-hover:text-white transition-all duration-300">
+                {item.icon}
+              </div>
+              <h4 className="text-2xl font-bold mb-4">{item.title}</h4>
+              <p className="text-gray-600 leading-relaxed">
+                {item.desc}
+              </p>
+            </div>
+          ))}
         </div>
 
-        {/* Call-to-Action */}
-        <div className="mt-20 text-center">
-          <h2 className="text-3xl font-bold">
-            Your Loved Ones Deserve <span className="text-secondary">Attention</span>
-          </h2>
-          <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
-            Don’t wait. Contact us via the short number or online platform and help
-            bring your loved ones back home safely.
-          </p>
+        {/* Final CTA */}
+        <div className="mt-24 p-12 md:p-20 bg-dark rounded-[3rem] text-white relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl" />
 
-          <Button className="m-8 bg-secondary text-white px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition">
-            Call 1212 Now
-          </Button>
+          <div className="relative z-10 flex flex-col items-center">
+            <h4 className="text-3xl md:text-5xl font-bold mb-8 text-center max-w-3xl leading-tight">
+              Every Second Counts. Let's Find Them <span className="text-secondary">Together</span>.
+            </h4>
+            <Button className="!bg-secondary !text-dark !px-10 !py-5 !rounded-2xl !font-black !text-xl shadow-xl shadow-secondary/20 hover:scale-105 transition-transform">
+              <PhoneCall className="mr-3" size={24} />
+              Call 1212 Immediately
+            </Button>
+          </div>
         </div>
       </div>
     </div>
