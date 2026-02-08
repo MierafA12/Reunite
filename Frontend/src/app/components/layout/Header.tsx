@@ -38,7 +38,7 @@ const Header = () => {
 
         <div className="flex items-center gap-4">
           <Button
-            href="/dashboard/user/report"
+            href={isLoggedIn ? "/dashboard/user/report" : `/auth/login?callbackUrl=${encodeURIComponent("/dashboard/user/report")}`}
             variant="secondary"
           >
             Report Missing
