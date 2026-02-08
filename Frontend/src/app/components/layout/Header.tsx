@@ -103,7 +103,7 @@ const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-3">
-            <div className="hidden sm:block">
+            <div className="hidden lg:block">
               <Button
                 href={isLoggedIn ? "/dashboard/user/report" : `/auth/login?callbackUrl=${encodeURIComponent("/dashboard/user/report")}`}
                 variant="secondary"
