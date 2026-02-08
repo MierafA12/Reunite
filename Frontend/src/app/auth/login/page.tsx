@@ -169,7 +169,7 @@ export default function LoginPage() {
               <p className="text-sm text-neutral font-medium">
                 Don't have an account?{" "}
                 <Link
-                  href="/auth/register"
+                  href={callbackUrl ? `/auth/register?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/auth/register"}
                   className="text-primary font-bold hover:text-primary-dark transition-colors underline decoration-2 underline-offset-4 decoration-primary/20 hover:decoration-primary"
                 >
                   Create Account
