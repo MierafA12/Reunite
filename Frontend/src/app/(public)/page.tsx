@@ -26,7 +26,7 @@ const Home = () => {
 
                 <Header />
 
-                <div className="relative z-10 flex items-center min-h-screen">
+                <div className="relative z-10 flex items-start sm:items-center min-h-screen pt-32 sm:pt-0">
                     <div className="max-w-7xl mx-auto px-6 text-white w-full">
 
                         <h1 className="text-4xl md:text-6xl font-bold max-w-3xl">
