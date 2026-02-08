@@ -159,20 +159,20 @@ const Header = () => {
           isMobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         )}
       >
-        {/* Backdrop */}
+        {/* Backdrop (Primary Tinted Blur) */}
         <div
-          className="absolute inset-0 bg-dark/95 backdrop-blur-xl"
+          className="absolute inset-0 bg-primary/10 backdrop-blur-[2px] transition-all duration-500"
           onClick={() => setIsMobileMenuOpen(false)}
         />
 
         {/* Menu Content */}
         <div
           className={clsx(
-            "absolute inset-y-0 right-0 w-[85%] max-w-sm bg-dark border-l border-white/10 p-8 flex flex-col transition-transform duration-500 ease-out shadow-2xl shadow-black",
+            "absolute inset-y-0 right-0 w-[85%] max-w-sm bg-dark border-l border-white/10 p-8 pt-24 flex flex-col transition-transform duration-500 ease-out shadow-2xl shadow-black",
             isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
           )}
         >
-          <div className="flex items-center justify-between mb-12">
+          <div className="flex items-center justify-between mb-8">
             <div className="flex flex-col">
               <span className="text-white font-bold text-2xl tracking-tight">
                 Menu
