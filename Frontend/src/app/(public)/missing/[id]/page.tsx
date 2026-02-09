@@ -18,8 +18,8 @@ interface PageProps {
 const PublicMissingPersonPage = async ({ params }: PageProps) => {
     const { id } = await params;
 
-    // Simulate that this post is owned by user "1" (the default logged-in user)
-    const ownerId = "1";
+    // Simulate that this post is owned by user "2" (so logged-in user "1" can flag it)
+    const ownerId = "2";
 
     // This would ideally fetch from an API
     const person = {
