@@ -97,37 +97,40 @@ export default function FlagButton({ ownerId }: { ownerId?: string }): React.Rea
                 onClose={() => setIsModalOpen(false)}
                 title="Report Inaccurate Information"
             >
-                <form onSubmit={handleSubmitFlag} className="space-y-4">
-                    <p className="text-gray-400 text-sm leading-relaxed">
-                        Please provide a reason why you believe this report is "Fake News" or inaccurate. Our moderators will review it shortly.
-                    </p>
+                <form onSubmit={handleSubmitFlag} className="flex flex-col gap-5">
+                    <div className="bg-danger/10 border border-danger/20 rounded-xl p-4 flex items-start gap-3">
+                        <AlertTriangle className="w-5 h-5 text-danger shrink-0 mt-0.5" />
+                        <p className="text-gray-300 text-sm leading-relaxed">
+                            Please provide a clear reason why you believe this report is "Fake News" or inaccurate. Your feedback helps us maintain a safe community.
+                        </p>
+                    </div>
 
-                    <div>
-                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
+                    <div className="space-y-2">
+                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider">
                             Reason for reporting
                         </label>
                         <textarea
                             required
                             value={reason}
                             onChange={(e) => setReason(e.target.value)}
-                            placeholder="Describe why this post is fake..."
-                            className="w-full h-32 bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-danger/50 transition-all resize-none"
+                            placeholder="e.g., This person was found last week, or this photo is from a different country..."
+                            className="w-full h-40 bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-secondary/50 focus:ring-1 focus:ring-secondary/50 transition-all resize-none text-sm"
                         />
                     </div>
 
-                    <div className="flex justify-end gap-3 mt-6">
+                    <div className="flex items-center gap-3 pt-2">
                         <button
                             type="button"
                             onClick={() => setIsModalOpen(false)}
-                            className="px-6 py-2 rounded-xl bg-white/5 text-white hover:bg-white/10 transition-all text-sm font-bold"
+                            className="flex-1 px-6 py-3 rounded-xl bg-white/5 text-white hover:bg-white/10 transition-all text-sm font-bold border border-white/5"
                         >
                             Cancel
                         </button>
                         <Button
                             type="submit"
-                            variant="danger"
+                            variant="secondary"
                             disabled={isSubmitting || !reason.trim()}
-                            className="px-6 py-2 rounded-xl flex items-center gap-2"
+                            className="flex-[2] py-3 rounded-xl flex items-center justify-center gap-2"
                         >
                             {isSubmitting ? (
                                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
