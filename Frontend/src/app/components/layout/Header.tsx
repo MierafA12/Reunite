@@ -103,16 +103,18 @@ const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-3">
-            <div className="hidden lg:block">
-              <Button
-                href={isLoggedIn ? "/dashboard/user/report" : `/auth/login?callbackUrl=${encodeURIComponent("/dashboard/user/report")}`}
-                variant="secondary"
-                className="rounded-full shadow-lg shadow-secondary/20 hover:shadow-secondary/40 !py-2 !px-6"
-              >
-                <FilePlus size={18} className="mr-2" />
-                Report Missing
-              </Button>
-            </div>
+            {!isLoggedIn && (
+              <div className="hidden lg:block">
+                <Button
+                  href="/auth/login?callbackUrl=/dashboard/user/report"
+                  variant="secondary"
+                  className="rounded-full shadow-lg shadow-secondary/20 hover:shadow-secondary/40 !py-2 !px-6"
+                >
+                  <FilePlus size={18} className="mr-2" />
+                  Report Missing
+                </Button>
+              </div>
+            )}
 
             {isLoggedIn ? (
               <div className="hidden lg:flex items-center gap-3">
@@ -124,7 +126,10 @@ const Header = () => {
                   <LayoutDashboard size={22} />
                 </Link>
                 <button
-                  onClick={logout}
+                  onClick={() => {
+                    logout();
+                    router.push("/");
+                  }}
                   className="p-2 hover:bg-danger/10 rounded-full transition-all text-white/80 hover:text-danger"
                   title="Logout"
                 >
@@ -133,7 +138,7 @@ const Header = () => {
               </div>
             ) : (
               <Link
-                href={`/auth/login?callbackUrl=${encodeURIComponent(pathname)}`}
+                href="/auth/login"
                 className="hidden lg:flex items-center gap-2 text-white hover:text-secondary transition-colors px-4 py-2 font-semibold text-sm"
               >
                 <LogIn size={18} />
@@ -205,13 +210,15 @@ const Header = () => {
           <div className="mt-auto space-y-4">
             <div className="h-px w-full bg-white/5 my-8" />
 
-            <Link
-              href={isLoggedIn ? "/dashboard/user/report" : `/auth/login?callbackUrl=${encodeURIComponent("/dashboard/user/report")}`}
-              className="flex items-center justify-center gap-3 w-full bg-secondary text-dark py-4 rounded-2xl font-bold text-lg shadow-lg shadow-secondary/10"
-            >
-              <FilePlus size={22} />
-              Report Missing
-            </Link>
+            {!isLoggedIn && (
+              <Link
+                href="/auth/login?callbackUrl=/dashboard/user/report"
+                className="flex items-center justify-center gap-3 w-full bg-secondary text-dark py-4 rounded-2xl font-bold text-lg shadow-lg shadow-secondary/10"
+              >
+                <FilePlus size={22} />
+                Report Missing
+              </Link>
+            )}
 
             {isLoggedIn ? (
               <>
@@ -223,16 +230,19 @@ const Header = () => {
                   User Dashboard
                 </Link>
                 <button
-                  onClick={logout}
+                  onClick={() => {
+                    logout();
+                    router.push("/");
+                  }}
                   className="flex items-center gap-4 w-full px-6 py-4 border border-danger/30 rounded-2xl text-danger font-semibold hover:bg-danger/5"
                 >
                   <LogOut size={20} />
-                  Sign Out
+                  Logout
                 </button>
               </>
             ) : (
               <Link
-                href={`/auth/login?callbackUrl=${encodeURIComponent(pathname)}`}
+                href="/auth/login"
                 className="flex items-center justify-center gap-4 w-full px-6 py-4 border border-white/20 rounded-2xl text-white font-semibold hover:bg-white/5"
               >
                 <LogIn size={20} className="text-secondary" />
