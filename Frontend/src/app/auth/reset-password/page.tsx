@@ -32,13 +32,15 @@ export default function ResetPasswordPage() {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-dark via-neutral-dark to-primary p-4">
+      <div className="min-h-screen flex items-center justify-center bg-dark p-4">
         <div className="w-full max-w-2xl">
-          <SuccessMessage 
+          <SuccessMessage
             title="Password Reset Successful"
             message="Your password has been updated. You can now use your new password to sign in to your account."
             buttonText="Go to Login"
             buttonLink="/auth/login"
+            showVerificationBadge={true}
+            badgeText="Security Updated"
           />
         </div>
       </div>
@@ -46,28 +48,28 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-dark via-neutral-dark to-primary p-4">
-      <div className="relative w-full max-w-md bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 md:p-10 animate-slideUp">
-        
+    <div className="min-h-screen flex items-center justify-center bg-dark p-4">
+      <div className="relative w-full max-w-md bg-dark-light/30 backdrop-blur-sm border border-white/5 rounded-3xl shadow-2xl p-8 md:p-10 animate-fadeInUp">
+
         {/* Back Button */}
         <Link
           href="/auth/forgot-password/verify"
-          className="absolute top-4 left-4 z-10 text-neutral hover:text-primary transition-colors p-2"
+          className="absolute top-4 left-4 z-10 text-gray-400 hover:text-secondary transition-colors p-2"
         >
           <ArrowLeft size={20} />
         </Link>
 
         <div className="flex flex-col items-center text-center mb-8">
-          <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 animate-bounce-subtle">
-            <Lock className="text-primary" size={40} />
+          <div className="w-20 h-20 bg-secondary/10 rounded-full flex items-center justify-center mb-6 text-secondary">
+            <Lock size={40} />
           </div>
 
-          <h1 className="text-3xl font-bold text-neutral-dark mb-2">
-            New Password<span className="text-primary">.</span>
+          <h1 className="text-3xl font-bold text-white mb-2">
+            New Password<span className="text-secondary">.</span>
           </h1>
-          <div className="w-12 h-1 bg-primary rounded shadow-sm mb-4"></div>
-          
-          <p className="text-neutral text-sm font-medium">
+          <div className="w-12 h-1 bg-secondary rounded shadow-sm mb-4"></div>
+
+          <p className="text-gray-400 text-sm font-medium">
             Create a strong password to secure your account.
           </p>
         </div>
@@ -75,11 +77,11 @@ export default function ResetPasswordPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* New Password */}
           <div className="group">
-            <label className="block text-xs font-bold text-neutral-dark uppercase tracking-wider mb-2 transition-colors group-focus-within:text-primary">
+            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 transition-colors group-focus-within:text-secondary">
               New Password
             </label>
             <div className="relative">
-              <ShieldCheck className="absolute left-0 top-1/2 -translate-y-1/2 text-neutral group-focus-within:text-primary transition-colors" size={18} />
+              <ShieldCheck className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-secondary transition-colors" size={18} />
               <input
                 type="password"
                 {...register("password", {
@@ -87,7 +89,7 @@ export default function ResetPasswordPage() {
                   minLength: { value: 6, message: "Minimum 6 characters" },
                 })}
                 placeholder="••••••••"
-                className="w-full pl-7 pr-4 py-3 bg-transparent border-b-2 border-neutral-light focus:border-primary outline-none transition-all text-neutral-dark placeholder:text-neutral/40"
+                className="w-full pl-7 pr-4 py-3 bg-transparent border-b-2 border-white/10 focus:border-secondary outline-none transition-all text-white placeholder:text-gray-600"
               />
             </div>
             {errors.password && (
@@ -99,11 +101,11 @@ export default function ResetPasswordPage() {
 
           {/* Confirm Password */}
           <div className="group">
-            <label className="block text-xs font-bold text-neutral-dark uppercase tracking-wider mb-2 transition-colors group-focus-within:text-primary">
+            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 transition-colors group-focus-within:text-secondary">
               Confirm Password
             </label>
             <div className="relative">
-              <Lock className="absolute left-0 top-1/2 -translate-y-1/2 text-neutral group-focus-within:text-primary transition-colors" size={18} />
+              <Lock className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-secondary transition-colors" size={18} />
               <input
                 type="password"
                 {...register("confirmPassword", {
@@ -111,7 +113,7 @@ export default function ResetPasswordPage() {
                   validate: (value) => value === watch("password") || "Passwords do not match",
                 })}
                 placeholder="••••••••"
-                className="w-full pl-7 pr-4 py-3 bg-transparent border-b-2 border-neutral-light focus:border-primary outline-none transition-all text-neutral-dark placeholder:text-neutral/40"
+                className="w-full pl-7 pr-4 py-3 bg-transparent border-b-2 border-white/10 focus:border-secondary outline-none transition-all text-white placeholder:text-gray-600"
               />
             </div>
             {errors.confirmPassword && (
@@ -121,41 +123,11 @@ export default function ResetPasswordPage() {
             )}
           </div>
 
-          <Button type="submit" className="w-full py-4 rounded-xl text-lg font-semibold shadow-lg shadow-primary/25">
+          <Button type="submit" className="w-full py-4 rounded-2xl text-lg font-bold shadow-lg shadow-secondary/25 bg-secondary hover:shadow-[0_0_20px_rgba(79,70,229,0.4)]">
             Reset Password
           </Button>
         </form>
       </div>
-
-      <style jsx>{`
-        @keyframes slideUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes bounce-subtle {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-8px); }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        .animate-slideUp {
-          animation: slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        .animate-bounce-subtle {
-          animation: bounce-subtle 3s ease-in-out infinite;
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.4s ease-out forwards;
-        }
-      `}</style>
     </div>
   );
 }
