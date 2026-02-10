@@ -2,10 +2,11 @@
 
 import React, { useState } from "react";
 import Header from "@/app/components/layout/Header";
-import { User, MapPin, Calendar, Camera, FileText, ArrowRight, ArrowLeft, CheckCircle2, ShieldCheck, Upload, Loader2 } from "lucide-react";
+import { User, MapPin, Calendar, Camera, FileText, ArrowRight, ArrowLeft, CheckCircle2, ShieldCheck, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import Modal from "@/app/components/ui/Modal";
+import VerifyCodePage from "@/app/components/page/verify";
+import SubmissionSuccess from "@/app/components/page/SubmissionSuccess";
 
 const steps = [
     { title: "Personal Details", icon: User },
@@ -18,26 +19,25 @@ export default function ReportPage() {
     const router = useRouter();
     const [currentStep, setCurrentStep] = useState(0);
     const [isSubmitted, setIsSubmitted] = useState(false);
-    const [isVerifyingModalOpen, setIsVerifyingModalOpen] = useState(false);
-    const [isVerifyingCode, setIsVerifyingCode] = useState(false);
-    const [verificationCode, setVerificationCode] = useState("");
+    const [showVerification, setShowVerification] = useState(false);
+    const [isVerifying, setIsVerifying] = useState(false);
 
     const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
     const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        setIsVerifyingModalOpen(true);
+        setShowVerification(true);
     };
 
-    const handleVerify = () => {
-        if (verificationCode.length !== 6) return;
+    const handleVerifyCode = (code: string) => {
+        console.log("Verification code:", code);
+        setIsVerifying(true);
 
-        setIsVerifyingCode(true);
         // Simulate verification process
         setTimeout(() => {
-            setIsVerifyingCode(false);
-            setIsVerifyingModalOpen(false);
+            setIsVerifying(false);
+            setShowVerification(false);
             setIsSubmitted(true);
             setTimeout(() => {
                 router.push("/dashboard/user");
@@ -45,35 +45,33 @@ export default function ReportPage() {
         }, 2000);
     };
 
+    // Show verification page
+    if (showVerification) {
+        return (
+            <VerifyCodePage
+                onSubmit={handleVerifyCode}
+                onBack={() => setShowVerification(false)}
+                isLoading={isVerifying}
+                title="Verify Report Submission"
+                description="We've sent a 6-digit verification code to your registered email. Please enter it below to authorize this report."
+                backLinkText="Back to Report Form"
+                showResendButton={true}
+            />
+        );
+    }
+
     if (isSubmitted) {
         return (
-            <div className="min-h-screen bg-dark flex items-center justify-center p-6">
-                <div className="max-w-md w-full text-center space-y-8 animate-fadeInUp">
-                    <div className="relative mx-auto w-24 h-24">
-                        <div className="absolute inset-0 bg-success/20 rounded-full blur-xl animate-pulse" />
-                        <div className="relative w-24 h-24 bg-success/20 rounded-full flex items-center justify-center border border-success/30">
-                            <CheckCircle2 className="w-12 h-12 text-success" />
-                        </div>
-                    </div>
-                    <div className="space-y-4">
-                        <h1 className="text-4xl font-extrabold text-white tracking-tight">Report <span className="text-success">Received</span></h1>
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-secondary/10 border border-secondary/20 rounded-full text-secondary text-xs font-bold uppercase tracking-wider">
-                            <ShieldCheck size={14} />
-                            Verification Pending
-                        </div>
-                        <p className="text-gray-400 leading-relaxed">
-                            Your report has been successfully submitted and is now in our <span className="text-white font-bold">verification pipeline</span>.
-                            Our team will review the details to ensure accuracy before it goes public.
-                        </p>
-                    </div>
-                    <div className="space-y-4">
-                        <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
-                            <div className="bg-secondary h-full animate-[progress_4s_linear]" />
-                        </div>
-                        <p className="text-xs text-gray-600 italic">Redirecting you back to dashboard...</p>
-                    </div>
-                </div>
-            </div>
+            <SubmissionSuccess
+                title="Report"
+                subtitle="Received"
+                message="Your report has been successfully submitted and is now in our verification pipeline. Our team will review the details to ensure accuracy before it goes public."
+                statusBadge="Verification Pending"
+                showStatusBadge={true}
+                redirectUrl="/dashboard/user"
+                redirectDelay={4000}
+                progressDuration={4}
+            />
         );
     }
 
@@ -305,64 +303,6 @@ export default function ReportPage() {
                     </form>
                 </div>
             </main>
-            {/* VERIFICATION MODAL */}
-            <Modal
-                isOpen={isVerifyingModalOpen}
-                onClose={() => !isVerifyingCode && setIsVerifyingModalOpen(false)}
-                title="Report Verification"
-            >
-                <div className="space-y-6 py-4">
-                    <div className="flex flex-col items-center text-center space-y-4">
-                        <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center text-secondary">
-                            <ShieldCheck size={32} />
-                        </div>
-                        <div className="space-y-2">
-                            <h4 className="text-xl font-bold">Secure Your Report</h4>
-                            <p className="text-sm text-gray-400">
-                                We've sent a 6-digit verification code to your registered email. Please enter it below to authorize this report.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="space-y-4">
-                        <div className="relative">
-                            <input
-                                type="text"
-                                maxLength={6}
-                                value={verificationCode}
-                                onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))}
-                                placeholder="******"
-                                className="w-full bg-dark border border-white/10 rounded-2xl px-6 py-4 text-center text-3xl font-mono tracking-[0.5em] outline-none focus:border-secondary transition-all"
-                                disabled={isVerifyingCode}
-                            />
-                        </div>
-
-                        <button
-                            onClick={handleVerify}
-                            disabled={verificationCode.length !== 6 || isVerifyingCode}
-                            className={`w-full py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-3 ${verificationCode.length === 6 && !isVerifyingCode
-                                ? "bg-secondary text-white hover:shadow-[0_0_20px_rgba(79,70,229,0.4)]"
-                                : "bg-white/5 text-gray-500 cursor-not-allowed"
-                                }`}
-                        >
-                            {isVerifyingCode ? (
-                                <>
-                                    <Loader2 className="animate-spin" size={20} />
-                                    Verifying...
-                                </>
-                            ) : (
-                                "Verify & Submit"
-                            )}
-                        </button>
-                    </div>
-
-                    <div className="text-center">
-                        <button className="text-xs text-secondary font-bold hover:underline">
-                            Resend verification code
-                        </button>
-                    </div>
-                </div>
-            </Modal>
         </div>
     );
 }
