@@ -6,6 +6,7 @@ import { Send, ShieldCheck, ArrowLeft, MessageSquare, Info, CheckCircle2, Camera
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Button from "@/app/components/ui/Button";
+import SubmissionSuccess from "@/app/components/page/SubmissionSuccess";
 
 function SendTipContent() {
     const router = useRouter();
@@ -26,31 +27,21 @@ function SendTipContent() {
         setTimeout(() => {
             setIsSending(false);
             setSent(true);
-            setTimeout(() => {
-                router.push(`/missing/${caseId}`);
-            }, 3000);
         }, 2000);
     };
 
     if (sent) {
         return (
-            <div className="min-h-screen bg-dark flex items-center justify-center p-6 text-white text-center">
-                <div className="max-w-md w-full space-y-6 animate-fadeInUp">
-                    <div className="w-24 h-24 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-8 border border-success/30">
-                        <CheckCircle2 className="w-12 h-12 text-success" />
-                    </div>
-                    <h1 className="text-4xl font-bold">Tip Sent Securely</h1>
-                    <p className="text-gray-400">
-                        Thank you for your contribution. Your tip has been encrypted and delivered directly to the family managing the case for {personName}.
-                    </p>
-                    <div className="pt-8 flex flex-col items-center gap-4">
-                        <p className="text-xs text-secondary font-bold animate-pulse">Redirecting you back to the case details...</p>
-                        <div className="w-48 bg-white/5 h-1 rounded-full overflow-hidden">
-                            <div className="bg-secondary h-full animate-[progress_3s_linear]" />
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <SubmissionSuccess
+                title="Tip Sent"
+                subtitle="Securely"
+                message={`Thank you for your contribution. Your tip has been encrypted and delivered directly to the family managing the case for ${personName}.`}
+                statusBadge="Encrypted & Delivered"
+                showStatusBadge={true}
+                redirectUrl={`/missing/${caseId}`}
+                redirectDelay={3000}
+                progressDuration={3}
+            />
         );
     }
 
