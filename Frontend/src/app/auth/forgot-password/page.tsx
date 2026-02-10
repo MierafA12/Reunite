@@ -20,41 +20,38 @@ export default function ForgotPasswordPage() {
 
   const onSubmit: SubmitHandler<ForgotPasswordForm> = (data) => {
     console.log("Forgot password:", data);
+    // Navigate to verification page
+    router.push("/auth/forgot-password/verify");
   };
 
-  const handleSendResetLink = handleSubmit((data) => {
-  console.log("Forgot password:", data);
-  router.push("/auth/forgot-password/verify");
-});
-
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-neutral-light px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-10 relative overflow-hidden">
-
-        {/* Decorative top bar */}
-        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary to-secondary" />
+    <div className="min-h-screen flex items-center justify-center bg-dark px-4">
+      <div className="w-full max-w-md bg-dark-light/30 backdrop-blur-sm border border-white/5 rounded-3xl shadow-2xl p-10 relative">
 
         {/* Icon */}
-        <div className="w-16 h-16 bg-primary-light rounded-full flex items-center justify-center mx-auto mb-6">
-          <Mail className="text-primary" size={32} />
-        </div>
+        <div className="flex flex-col items-center text-center mb-8">
+          <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mb-6 text-secondary">
+            <Mail size={32} />
+          </div>
 
-        <h2 className="text-2xl font-bold text-center text-neutral-dark">
-          Forgot your password?
-        </h2>
-        <p className="text-center text-neutral text-sm mt-2 mb-8">
-          Enter your email address and we’ll send you a link to reset your password.
-        </p>
+          <h2 className="text-3xl font-bold text-white mb-2">
+            Forgot Password<span className="text-secondary">?</span>
+          </h2>
+          <div className="w-12 h-1 bg-secondary rounded shadow-sm mb-4"></div>
+
+          <p className="text-gray-400 text-sm font-medium">
+            Enter your email address and we'll send you a verification code.
+          </p>
+        </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
-          <div>
-            <label className="block text-sm font-medium text-neutral mb-1">
+          <div className="group">
+            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 transition-colors group-focus-within:text-secondary">
               Email address
             </label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-primary" />
+              <Mail className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-secondary transition-colors" size={18} />
               <input
                 type="email"
                 placeholder="you@example.com"
@@ -65,24 +62,11 @@ export default function ForgotPasswordPage() {
                     message: "Enter a valid email",
                   },
                 })}
-                className="
-                  w-full
-                  pl-10
-                  pr-4
-                  py-3
-                  rounded-lg
-                  border
-                  border-neutral
-                  focus:border-primary
-                  focus:ring-2
-                  focus:ring-primary-light
-                  outline-none
-                  transition
-                "
+                className="w-full pl-7 pr-4 py-3 bg-transparent border-b-2 border-white/10 focus:border-secondary outline-none transition-all text-white placeholder:text-gray-600"
               />
             </div>
             {errors.email && (
-              <p className="text-danger text-xs mt-1">
+              <p className="text-danger text-xs mt-1 animate-fadeIn">
                 {errors.email.message}
               </p>
             )}
@@ -90,11 +74,10 @@ export default function ForgotPasswordPage() {
 
           {/* Button */}
           <Button
-           onClick={handleSendResetLink}
             type="submit"
-            className="w-full py-3 rounded-xl"
+            className="w-full py-4 rounded-2xl text-lg font-bold shadow-lg shadow-secondary/25 bg-secondary hover:shadow-[0_0_20px_rgba(79,70,229,0.4)]"
           >
-            Send reset link
+            Send Verification Code
           </Button>
         </form>
 
@@ -102,7 +85,7 @@ export default function ForgotPasswordPage() {
         <div className="mt-8 text-center">
           <Link
             href="/auth/login"
-            className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+            className="inline-flex items-center gap-2 text-sm text-secondary hover:underline font-bold"
           >
             <ArrowLeft size={16} />
             Back to login
