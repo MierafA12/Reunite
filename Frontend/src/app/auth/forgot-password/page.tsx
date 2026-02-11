@@ -20,8 +20,8 @@ export default function ForgotPasswordPage() {
 
   const onSubmit: SubmitHandler<ForgotPasswordForm> = (data) => {
     console.log("Forgot password:", data);
-    // Navigate to verification page
-    router.push("/auth/forgot-password/verify");
+    // Navigate to unified verification page with type and email
+    router.push(`/auth/verify?type=forgot-password&email=${encodeURIComponent(data.email)}`);
   };
 
   return (
