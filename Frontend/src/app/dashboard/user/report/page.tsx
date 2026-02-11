@@ -8,6 +8,7 @@ import Image from "next/image";
 import VerifyCodePage from "@/app/components/page/verify";
 import SubmissionSuccess from "@/app/components/page/SubmissionSuccess";
 
+
 const steps = [
     { title: "Personal Details", icon: User },
     { title: "Last Seen", icon: MapPin },
@@ -33,8 +34,6 @@ export default function ReportPage() {
     const handleVerifyCode = (code: string) => {
         console.log("Verification code:", code);
         setIsVerifying(true);
-
-        // Simulate verification process
         setTimeout(() => {
             setIsVerifying(false);
             setShowVerification(false);
