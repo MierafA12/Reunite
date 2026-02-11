@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { Lock, ArrowLeft, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import Button from "@/app/components/ui/Button";
-import SuccessMessage from "@/app/components/page/success";
+import SubmissionSuccess from "@/app/components/page/SubmissionSuccess";
 
 interface ResetPasswordForm {
   password: string;
@@ -24,7 +24,7 @@ export default function ResetPasswordPage() {
 
   const onSubmit = (data: ResetPasswordForm) => {
     console.log("Reset password:", data);
-    // Simulate API call
+
     setTimeout(() => {
       setIsSuccess(true);
     }, 1000);
@@ -33,15 +33,16 @@ export default function ResetPasswordPage() {
   if (isSuccess) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-dark p-4">
-        <div className="w-full max-w-2xl">
-          <SuccessMessage
-            title="Password Reset Successful"
-            message="Your password has been updated. You can now use your new password to sign in to your account."
-            buttonText="Go to Login"
-            buttonLink="/auth/login"
-            showVerificationBadge={true}
-            badgeText="Security Updated"
-          />
+        <div className="w-full max-w-2xl">      
+        <SubmissionSuccess
+              title="RePassword Reset Successful"
+                           subtitle="Received"
+                         message="Your password has been updated. You can now use your new password to sign in to your account."
+                           showStatusBadge={false}
+                           redirectUrl="/auth/login"
+                           redirectDelay={4000}
+                           progressDuration={4}
+                       />             
         </div>
       </div>
     );
@@ -53,7 +54,7 @@ export default function ResetPasswordPage() {
 
         {/* Back Button */}
         <Link
-          href="/auth/forgot-password/verify"
+          href="/auth/verify?type=forgot-password"
           className="absolute top-4 left-4 z-10 text-gray-400 hover:text-secondary transition-colors p-2"
         >
           <ArrowLeft size={20} />
