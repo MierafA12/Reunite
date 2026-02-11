@@ -33,12 +33,8 @@ export default function RegisterPage() {
 
   const onSubmit = (data: RegisterForm) => {
     console.log("Register data:", data);
-    // Simulate register and login
-    if (callbackUrl) {
-      router.push(callbackUrl);
-    } else {
-      router.push("/dashboard/user");
-    }
+    // After successful registration, redirect to verification page
+    router.push(`/auth/verify?type=register&email=${encodeURIComponent(data.email)}&callbackUrl=${encodeURIComponent(callbackUrl || "/dashboard/user")}`);
   };
 
   const goBack = () => router.back();
