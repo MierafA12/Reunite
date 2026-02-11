@@ -28,7 +28,7 @@ export default function VerifyCodePage({
   backLink = "/auth/forgot-password",
   backLinkText = "Back to Forgot Password",
   showResendButton = true,
-  showCloseButton = false,
+  showCloseButton = true,
   closeLink = "/auth/login"
 }: VerifyCodePageProps) {
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
