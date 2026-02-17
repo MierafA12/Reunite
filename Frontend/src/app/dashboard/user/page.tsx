@@ -97,7 +97,7 @@ export default function UserDashboard() {
                                 iconColor="text-success"
                                 iconBgColor="bg-success/10"
                                 actionLabel="See All"
-                                onClick={() => alert("Opening notifications...")}
+                                actionHref="/dashboard/user/notifications"
                             />
                             <div className="bg-dark-light/50 border border-white/5 rounded-3xl p-6 flex flex-col justify-between">
                                 <div className="flex items-center gap-3 mb-4">
