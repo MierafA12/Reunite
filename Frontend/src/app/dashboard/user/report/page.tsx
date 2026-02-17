@@ -37,6 +37,7 @@ export default function ReportPage() {
         story: "",
         reward: "",
         hasReward: false,
+        otherRelation: "",
     });
 
     const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
@@ -222,6 +223,17 @@ export default function ReportPage() {
                                             <option value="Other">Other</option>
                                         </select>
                                     </div>
+                                    {formData.relation === "Other" && (
+                                        <div className="animate-fadeIn mt-4 pl-12">
+                                            <input
+                                                name="otherRelation"
+                                                value={formData.otherRelation}
+                                                onChange={handleInputChange}
+                                                placeholder="Specify your relation"
+                                                className="w-full bg-dark border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-secondary transition-all"
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -385,7 +397,9 @@ export default function ReportPage() {
                                             </div>
                                             <div className="flex justify-between border-b border-white/5 pb-2">
                                                 <span className="text-gray-500">Relation:</span>
-                                                <span className="font-medium text-secondary">{formData.relation || "Not specified"}</span>
+                                                <span className="font-medium text-secondary">
+                                                    {formData.relation === "Other" ? formData.otherRelation || "Other" : formData.relation || "Not specified"}
+                                                </span>
                                             </div>
                                         </div>
 
