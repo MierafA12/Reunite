@@ -4,8 +4,15 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 
 interface User {
     id: string;
-    name: string;
+    first_name: string;
+    middle_name?: string;
+    last_name: string;
+    name?: string; // For backward compatibility if needed
     email: string;
+    phone?: string;
+    workplace?: string;
+    address?: string;
+    profile_image?: string;
 }
 
 interface AuthContextType {

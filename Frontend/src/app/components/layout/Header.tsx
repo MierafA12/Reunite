@@ -23,7 +23,7 @@ import clsx from "clsx";
 const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, logout, user } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -120,10 +120,24 @@ const Header = () => {
               <div className="hidden lg:flex items-center gap-3">
                 <Link
                   href="/dashboard/user"
-                  className="p-2 hover:bg-white/5 rounded-full transition-colors text-white/80 hover:text-white"
+                  className="flex items-center gap-2 group"
                   title="Dashboard"
                 >
-                  <LayoutDashboard size={22} />
+                  {isLoggedIn && user?.profile_image ? (
+                    <div className="relative w-9 h-9 rounded-full overflow-hidden border-2 border-secondary/30 group-hover:border-secondary transition-all">
+                      <Image
+                        src={user.profile_image}
+                        alt="Profile"
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                    </div>
+                  ) : (
+                    <div className="p-2 hover:bg-white/5 rounded-full transition-colors text-white/80 group-hover:text-white">
+                      <LayoutDashboard size={22} />
+                    </div>
+                  )}
                 </Link>
                 <button
                   onClick={() => {
