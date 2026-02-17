@@ -7,10 +7,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { X, ArrowLeft } from "lucide-react";
 import Button from "@/app/components/ui/Button";
 
+import { useAuth } from "@/app/context/AuthContext";
+
 interface RegisterForm {
-  firstName: string;
-  middleName: string;
-  lastName: string;
+  first_name: string;
+  middle_name: string;
+  last_name: string;
   phone: string;
   email: string;
   password: string;
@@ -23,6 +25,7 @@ export default function RegisterPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
+  const { login } = useAuth();
 
   const {
     register,
@@ -33,6 +36,22 @@ export default function RegisterPage() {
 
   const onSubmit = (data: RegisterForm) => {
     console.log("Register data:", data);
+
+    // Simulate frontend registration by logging user in locally
+    const newUser = {
+      id: Math.random().toString(36).substr(2, 9),
+      first_name: data.first_name,
+      middle_name: data.middle_name,
+      last_name: data.last_name,
+      name: `${data.first_name} ${data.last_name}`,
+      email: data.email,
+      phone: data.phone,
+      workplace: data.workplace,
+      address: data.address,
+    };
+
+    login(newUser);
+
     // After successful registration, redirect to verification page
     router.push(`/auth/verify?type=register&email=${encodeURIComponent(data.email)}&callbackUrl=${encodeURIComponent(callbackUrl || "/dashboard/user")}`);
   };
@@ -105,17 +124,17 @@ export default function RegisterPage() {
                 <label className="block text-xs font-semibold text-gray-600 mb-1">First Name</label>
                 <input
                   type="text"
-                  {...register("firstName", { required: "First name required" })}
+                  {...register("first_name", { required: "First name required" })}
                   className="w-full border-b border-gray-300 py-2 outline-none focus:border-primary"
                 />
-                {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName.message}</p>}
+                {errors.first_name && <p className="text-red-500 text-xs mt-1">{errors.first_name.message}</p>}
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-gray-600 mb-1">Middle Name</label>
                 <input
                   type="text"
-                  {...register("middleName")}
+                  {...register("middle_name")}
                   className="w-full border-b border-gray-300 py-2 outline-none focus:border-primary"
                 />
               </div>
@@ -124,10 +143,10 @@ export default function RegisterPage() {
                 <label className="block text-xs font-semibold text-gray-600 mb-1">Last Name</label>
                 <input
                   type="text"
-                  {...register("lastName", { required: "Last name required" })}
+                  {...register("last_name", { required: "Last name required" })}
                   className="w-full border-b border-gray-300 py-2 outline-none focus:border-primary"
                 />
-                {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName.message}</p>}
+                {errors.last_name && <p className="text-red-500 text-xs mt-1">{errors.last_name.message}</p>}
               </div>
             </div>
 
