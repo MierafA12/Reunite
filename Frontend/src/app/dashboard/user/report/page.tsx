@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Header from "@/app/components/layout/Header";
-import { User, MapPin, Calendar, Camera, FileText, ArrowRight, ArrowLeft, CheckCircle2, ShieldCheck, Upload } from "lucide-react";
+import { User, MapPin, Calendar, Camera, FileText, ArrowRight, ArrowLeft, CheckCircle2, ShieldCheck, Upload, Video, Heart, DollarSign, Quote } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import VerifyCodePage from "@/app/components/page/verify";
@@ -11,7 +11,7 @@ import SubmissionSuccess from "@/app/components/page/SubmissionSuccess";
 
 const steps = [
     { title: "Personal Details", icon: User },
-    { title: "Last Seen", icon: MapPin },
+    { title: "Last Seen & Story", icon: MapPin },
     { title: "Media & Evidence", icon: Camera },
     { title: "Review & Submit", icon: FileText },
 ];
@@ -23,8 +23,34 @@ export default function ReportPage() {
     const [showVerification, setShowVerification] = useState(false);
     const [isVerifying, setIsVerifying] = useState(false);
 
+    // Form State
+    const [formData, setFormData] = useState({
+        fullName: "",
+        nickname: "",
+        age: "",
+        gender: "",
+        nationality: "",
+        relation: "",
+        lastSeenLocation: "",
+        lastSeenDate: "",
+        physicalDescription: "",
+        story: "",
+        reward: "",
+        hasReward: false,
+    });
+
     const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
     const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, checked } = e.target;
+        setFormData(prev => ({ ...prev, [name]: checked }));
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -122,6 +148,9 @@ export default function ReportPage() {
                                     <div className="space-y-3">
                                         <label className="text-sm font-bold text-gray-400 uppercase tracking-widest">Full Name</label>
                                         <input
+                                            name="fullName"
+                                            value={formData.fullName}
+                                            onChange={handleInputChange}
                                             placeholder="Enter full legal name"
                                             className="w-full bg-dark border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-secondary transition-all"
                                         />
@@ -129,6 +158,9 @@ export default function ReportPage() {
                                     <div className="space-y-3">
                                         <label className="text-sm font-bold text-gray-400 uppercase tracking-widest">Nickname / Alias</label>
                                         <input
+                                            name="nickname"
+                                            value={formData.nickname}
+                                            onChange={handleInputChange}
                                             placeholder="Any other names they go by"
                                             className="w-full bg-dark border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-secondary transition-all"
                                         />
@@ -138,26 +170,57 @@ export default function ReportPage() {
                                     <div className="space-y-3">
                                         <label className="text-sm font-bold text-gray-400 uppercase tracking-widest">Age</label>
                                         <input
+                                            name="age"
                                             type="number"
+                                            value={formData.age}
+                                            onChange={handleInputChange}
                                             placeholder="Current age"
                                             className="w-full bg-dark border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-secondary transition-all"
                                         />
                                     </div>
                                     <div className="space-y-3">
                                         <label className="text-sm font-bold text-gray-400 uppercase tracking-widest">Gender</label>
-                                        <select className="w-full bg-dark border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-secondary transition-all appearance-none cursor-pointer">
-                                            <option>Select Gender</option>
-                                            <option>Male</option>
-                                            <option>Female</option>
-                                            <option>Other</option>
+                                        <select
+                                            name="gender"
+                                            value={formData.gender}
+                                            onChange={handleInputChange}
+                                            className="w-full bg-dark border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-secondary transition-all appearance-none cursor-pointer"
+                                        >
+                                            <option value="">Select Gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
                                         </select>
                                     </div>
                                     <div className="space-y-3">
                                         <label className="text-sm font-bold text-gray-400 uppercase tracking-widest">Nationality</label>
                                         <input
+                                            name="nationality"
+                                            value={formData.nationality}
+                                            onChange={handleInputChange}
                                             placeholder="Country of origin"
                                             className="w-full bg-dark border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-secondary transition-all"
                                         />
+                                    </div>
+                                </div>
+                                <div className="space-y-3">
+                                    <label className="text-sm font-bold text-gray-400 uppercase tracking-widest">Your Relation to the Person</label>
+                                    <div className="relative">
+                                        <Heart className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+                                        <select
+                                            name="relation"
+                                            value={formData.relation}
+                                            onChange={handleInputChange}
+                                            className="w-full bg-dark border border-white/10 rounded-2xl pl-12 pr-6 py-4 outline-none focus:border-secondary transition-all appearance-none cursor-pointer"
+                                        >
+                                            <option value="">Select Relation</option>
+                                            <option value="Parent">Parent</option>
+                                            <option value="Sibling">Sibling</option>
+                                            <option value="Friend">Friend</option>
+                                            <option value="Relative">Relative</option>
+                                            <option value="Guardian">Guardian</option>
+                                            <option value="Other">Other</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -171,6 +234,9 @@ export default function ReportPage() {
                                         <div className="relative">
                                             <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
                                             <input
+                                                name="lastSeenLocation"
+                                                value={formData.lastSeenLocation}
+                                                onChange={handleInputChange}
                                                 placeholder="City, District, Landmark"
                                                 className="w-full bg-dark border border-white/10 rounded-2xl pl-12 pr-6 py-4 outline-none focus:border-secondary transition-all"
                                             />
@@ -181,18 +247,71 @@ export default function ReportPage() {
                                         <div className="relative">
                                             <Calendar className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
                                             <input
+                                                name="lastSeenDate"
                                                 type="date"
+                                                value={formData.lastSeenDate}
+                                                onChange={handleInputChange}
                                                 className="w-full bg-dark border border-white/10 rounded-2xl pl-12 pr-6 py-4 outline-none focus:border-secondary transition-all"
                                             />
                                         </div>
                                     </div>
                                 </div>
                                 <div className="space-y-3">
-                                    <label className="text-sm font-bold text-gray-400 uppercase tracking-widest">Physical Description at Time of Disappearance</label>
+                                    <label className="text-sm font-bold text-gray-400 uppercase tracking-widest">Physical Description</label>
                                     <textarea
+                                        name="physicalDescription"
+                                        value={formData.physicalDescription}
+                                        onChange={handleInputChange}
                                         placeholder="What were they wearing? Any visible marks, tattoos, or accessories?"
+                                        className="w-full bg-dark border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-secondary transition-all min-h-[100px]"
+                                    />
+                                </div>
+                                <div className="space-y-3">
+                                    <label className="text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                        <Quote size={14} className="text-secondary" />
+                                        The Story / Circumstances
+                                    </label>
+                                    <textarea
+                                        name="story"
+                                        value={formData.story}
+                                        onChange={handleInputChange}
+                                        placeholder="Describe the events leading up to their disappearance. Any specific details help the community understand the context."
                                         className="w-full bg-dark border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-secondary transition-all min-h-[150px]"
                                     />
+                                </div>
+                                <div className="p-6 bg-secondary/5 border border-secondary/10 rounded-3xl space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-secondary/20 rounded-full flex items-center justify-center">
+                                                <DollarSign size={20} className="text-secondary" />
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-white">Offer Reward</p>
+                                                <p className="text-xs text-gray-500">Optional reward for confirmed leads</p>
+                                            </div>
+                                        </div>
+                                        <label className="relative inline-flex items-center cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                name="hasReward"
+                                                checked={formData.hasReward}
+                                                onChange={handleCheckboxChange}
+                                                className="sr-only peer"
+                                            />
+                                            <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+                                        </label>
+                                    </div>
+                                    {formData.hasReward && (
+                                        <div className="animate-fadeIn pt-2">
+                                            <input
+                                                name="reward"
+                                                value={formData.reward}
+                                                onChange={handleInputChange}
+                                                placeholder="Enter reward amount (e.g. $500 or description)"
+                                                className="w-full bg-dark border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-secondary transition-all"
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -209,18 +328,27 @@ export default function ReportPage() {
                                             <p className="text-xs text-gray-500 mt-1">Clear front-facing photo preferred</p>
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        {[1, 2, 3, 4].map((i) => (
-                                            <div key={i} className="border border-white/5 bg-dark rounded-2xl flex items-center justify-center text-gray-700 hover:border-secondary/30 transition-all cursor-pointer">
-                                                <Camera size={20} />
-                                            </div>
-                                        ))}
+                                    <div className="border-2 border-dashed border-white/10 rounded-3xl p-10 flex flex-col items-center justify-center space-y-4 hover:border-secondary/50 hover:bg-secondary/5 transition-all cursor-pointer group">
+                                        <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center group-hover:bg-secondary/10 transition-colors">
+                                            <Video className="text-gray-500 group-hover:text-secondary transition-colors" />
+                                        </div>
+                                        <div className="text-center">
+                                            <p className="font-bold">Upload Video Clip</p>
+                                            <p className="text-xs text-gray-500 mt-1">CCTV or recent footage</p>
+                                        </div>
                                     </div>
+                                </div>
+                                <div className="grid grid-cols-4 gap-4">
+                                    {[1, 2, 3, 4].map((i) => (
+                                        <div key={i} className="aspect-square border border-white/5 bg-dark rounded-2xl flex items-center justify-center text-gray-700 hover:border-secondary/30 transition-all cursor-pointer">
+                                            <Camera size={20} />
+                                        </div>
+                                    ))}
                                 </div>
                                 <div className="bg-primary/5 border border-primary/10 rounded-2xl p-6 flex gap-4">
                                     <ShieldCheck className="text-primary shrink-0" />
                                     <p className="text-xs text-gray-400 leading-relaxed">
-                                        Uploading recent, high-quality photos significantly helps the AI matching system and community members identify the person. Please ensure you have legal right to share these images.
+                                        Uploading recent, high-quality photos and video clips significantly helps the AI matching system and community members identify the person. Please ensure you have legal right to share these images.
                                     </p>
                                 </div>
                             </div>
@@ -228,9 +356,9 @@ export default function ReportPage() {
 
                         {currentStep === 3 && (
                             <div className="animate-fadeIn space-y-8">
-                                <div className="bg-white/5 rounded-3xl p-8 space-y-6">
+                                <div className="bg-white/5 rounded-3xl p-8 space-y-8">
                                     <div className="flex justify-between items-center pb-4 border-b border-white/5">
-                                        <h3 className="font-bold text-xl">Information Summary</h3>
+                                        <h3 className="font-bold text-xl">Detailed Summary</h3>
                                         <button
                                             type="button"
                                             onClick={() => setCurrentStep(0)}
@@ -239,22 +367,56 @@ export default function ReportPage() {
                                             Edit All
                                         </button>
                                     </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 text-sm">
-                                        <div className="flex justify-between md:pr-10 border-b border-white/5 md:border-b-0 pb-2 md:pb-0">
-                                            <span className="text-gray-500">Name:</span>
-                                            <span className="font-medium">Abebe Kebede Tesfaye</span>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 text-sm">
+                                        <div className="space-y-4">
+                                            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Personal Info</p>
+                                            <div className="flex justify-between border-b border-white/5 pb-2">
+                                                <span className="text-gray-500">Name:</span>
+                                                <span className="font-medium text-white">{formData.fullName || "Not specified"}</span>
+                                            </div>
+                                            <div className="flex justify-between border-b border-white/5 pb-2">
+                                                <span className="text-gray-500">Age:</span>
+                                                <span className="font-medium text-white">{formData.age ? `${formData.age} Years` : "Not specified"}</span>
+                                            </div>
+                                            <div className="flex justify-between border-b border-white/5 pb-2">
+                                                <span className="text-gray-500">Gender:</span>
+                                                <span className="font-medium text-white">{formData.gender || "Not specified"}</span>
+                                            </div>
+                                            <div className="flex justify-between border-b border-white/5 pb-2">
+                                                <span className="text-gray-500">Relation:</span>
+                                                <span className="font-medium text-secondary">{formData.relation || "Not specified"}</span>
+                                            </div>
                                         </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-500">Age:</span>
-                                            <span className="font-medium">27 Years</span>
+
+                                        <div className="space-y-4">
+                                            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Disappearance Info</p>
+                                            <div className="flex justify-between border-b border-white/5 pb-2">
+                                                <span className="text-gray-500">Location:</span>
+                                                <span className="font-medium text-white">{formData.lastSeenLocation || "Not specified"}</span>
+                                            </div>
+                                            <div className="flex justify-between border-b border-white/5 pb-2">
+                                                <span className="text-gray-500">Date:</span>
+                                                <span className="font-medium text-white">{formData.lastSeenDate || "Not specified"}</span>
+                                            </div>
+                                            <div className="flex justify-between border-b border-white/5 pb-2">
+                                                <span className="text-gray-500">Reward:</span>
+                                                <span className="font-medium text-green-400">{formData.hasReward ? formData.reward : "None offered"}</span>
+                                            </div>
                                         </div>
-                                        <div className="flex justify-between md:pr-10 border-b border-white/5 md:border-b-0 pb-2 md:pb-0">
-                                            <span className="text-gray-500">Location:</span>
-                                            <span className="font-medium">Piazza, Addis Ababa</span>
+                                    </div>
+
+                                    <div className="space-y-4 pt-4">
+                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">The Story</p>
+                                        <div className="bg-dark p-4 rounded-2xl border border-white/5 italic text-gray-300 line-clamp-3">
+                                            {formData.story || "No story provided."}
                                         </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-500">Date:</span>
-                                            <span className="font-medium">2026-01-12</span>
+                                    </div>
+
+                                    <div className="space-y-4 pt-2">
+                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Physical Description</p>
+                                        <div className="bg-dark p-4 rounded-2xl border border-white/5 text-gray-300">
+                                            {formData.physicalDescription || "No description provided."}
                                         </div>
                                     </div>
                                 </div>
