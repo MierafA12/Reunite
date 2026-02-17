@@ -150,7 +150,11 @@ export default function UserDashboard() {
                                     <span className="text-white font-bold">{userReports.length}</span>
                                 </div>
                             </div>
-                            <Button variant="outline" className="w-full mt-8 border-white/10 text-white py-3 rounded-xl font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-2">
+                            <Button
+                                href="/dashboard/user/profile"
+                                variant="outline"
+                                className="w-full mt-8 border-white/10 text-white py-3 rounded-xl font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-2"
+                            >
                                 <Settings className="w-4 h-4" />
                                 Profile Settings
                             </Button>
