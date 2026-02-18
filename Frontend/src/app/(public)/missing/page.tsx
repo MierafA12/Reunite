@@ -21,7 +21,9 @@ const missingPeople = [
         location: "Bole, Addis Ababa",
         date: "05 Feb 2026",
         image: "/images/reunite.jpeg",
-        status: "Missing"
+        status: "Missing",
+        reward: "ETB 25,000",
+        hasReward: true
     },
     {
         id: "3",
@@ -87,6 +89,14 @@ export default function MissingPage() {
                                         {person.status}
                                     </span>
                                 </div>
+                                {person.hasReward && (
+                                    <div className="absolute bottom-4 right-4">
+                                        <div className="bg-green-500/20 backdrop-blur-md text-green-400 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-xl border border-green-500/30 flex items-center gap-1.5 shadow-lg animate-pulse">
+                                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                                            Reward: {person.reward}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="p-6">
