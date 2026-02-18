@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Header from "@/app/components/layout/Header";
 import { InfoCard, ImageBox, VideoBox, Comment } from "@/app/components/ui/InfoCard";
-import { User, Calendar, MapPin, Flag, Clock, ShieldCheck } from "lucide-react";
+import { User, Calendar, MapPin, Flag, Clock, ShieldCheck, DollarSign } from "lucide-react";
 import React from "react";
 
 interface PageProps {
@@ -141,40 +141,77 @@ const MissingPersonPage = async ({ params }: PageProps) => {
                     </div>
                 </div>
 
-                {/* SIDEBAR - REPORTER INFO */}
-                <aside className="space-y-8">
-                    <div className="bg-dark-light border border-white/5 rounded-3xl p-8 sticky top-24">
-                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-                            <ShieldCheck className="w-5 h-5 text-secondary" />
-                            Verified Reporter
-                        </h2>
+                {/* SIDEBAR - REPORTER & REWARD */}
+                <aside className="relative">
+                    <div className="sticky top-24 space-y-8">
+                        <div className="bg-dark-light border border-white/5 rounded-3xl p-8 shadow-xl">
+                            <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-secondary">
+                                <ShieldCheck className="w-5 h-5" />
+                                Case Management
+                            </h2>
 
-                        <div className="flex items-center gap-4 mb-6">
-                            <div className="w-14 h-14 rounded-full bg-secondary/10 flex items-center justify-center border border-secondary/20 font-bold text-xl text-secondary">
-                                KT
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="w-14 h-14 rounded-full bg-secondary/10 flex items-center justify-center border border-secondary/20 font-bold text-xl text-secondary">
+                                    KT
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-white leading-tight">Kebede Tesfaye</h4>
+                                    <p className="text-sm text-gray-500">Author (Family Member)</p>
+                                </div>
                             </div>
-                            <div>
-                                <h4 className="font-bold text-white leading-tight">Kebede Tesfaye</h4>
-                                <p className="text-sm text-gray-500">Family Member (Brother)</p>
+
+                            <div className="space-y-4 mb-8">
+                                <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
+                                    <p className="text-xs text-secondary font-bold uppercase tracking-widest mb-1">Status</p>
+                                    <p className="text-sm font-medium text-white flex items-center gap-2">
+                                        <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                                        Case Active
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                <button className="w-full bg-secondary text-white py-4 rounded-2xl font-bold hover:shadow-[0_0_20px_rgba(79,70,229,0.4)] transition-all">
+                                    Edit Case Details
+                                </button>
+                                <button className="w-full border border-white/10 text-white py-4 rounded-2xl font-bold hover:bg-white/5 transition-all">
+                                    Share Update
+                                </button>
                             </div>
                         </div>
 
-                        <div className="space-y-4 mb-8">
-                            <div className="text-sm text-gray-400 leading-relaxed italic">
-                                "We are desperate to find him. Please help us by sharing this case."
-                            </div>
-                            <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
-                                <p className="text-xs text-gray-400 uppercase font-bold mb-1">Response Time</p>
-                                <p className="text-sm font-medium">Usually within 2 hours</p>
+                        {/* PREMIUM REWARD CALLOUT FOR OWNER */}
+                        <div className="relative group overflow-hidden rounded-3xl transition-all duration-500 hover:scale-[1.02]">
+                            <div className="absolute -inset-1 bg-gradient-to-r from-green-500/20 via-emerald-500/20 to-green-500/20 rounded-3xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+
+                            <div className="relative bg-[#0a0f0d] border border-green-500/20 rounded-3xl p-8 shadow-2xl overflow-hidden">
+                                <div className="absolute -top-10 -right-10 w-32 h-32 bg-green-500/10 rounded-full blur-3xl" />
+
+                                <h2 className="text-[10px] font-black text-green-400 uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
+                                    <DollarSign className="w-3 h-3" />
+                                    Case Bounty
+                                </h2>
+
+                                <div className="flex flex-col items-center text-center space-y-4">
+                                    <div className="w-20 h-20 bg-green-500/10 rounded-[1.5rem] flex items-center justify-center border border-green-500/20 rotate-6 group-hover:rotate-0 transition-transform duration-700">
+                                        <DollarSign className="w-10 h-10 text-green-400" />
+                                    </div>
+
+                                    <div className="space-y-1">
+                                        <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Active Reward</p>
+                                        <p className="text-4xl font-black text-white tracking-tighter drop-shadow-[0_0_15px_rgba(34,197,94,0.3)]">
+                                            ETB 50,000
+                                        </p>
+                                    </div>
+
+                                    <div className="w-full h-px bg-gradient-to-r from-transparent via-green-500/20 to-transparent my-2" />
+
+                                    <p className="text-gray-400 text-xs leading-relaxed italic">
+                                        "This amount is what you have offered for confirmed information leading to a reunion."
+                                    </p>
+                                </div>
                             </div>
                         </div>
-
-                        <button className="w-full bg-white text-dark py-4 rounded-2xl font-bold hover:bg-gray-200 transition-colors mb-4">
-                            Contact Family
-                        </button>
-                        <button className="w-full border border-white/10 text-white py-4 rounded-2xl font-bold hover:bg-white/5 transition-colors">
-                            Share Case
-                        </button>
                     </div>
                 </aside>
 
