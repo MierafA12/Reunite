@@ -11,22 +11,16 @@ return new class extends Migration
     {
     Schema::create('users', function (Blueprint $table) {
     $table->uuid('id')->primary();
-
     $table->string('first_name');
     $table->string('last_name');
-
     $table->string('email')->unique();
     $table->string('password');
     $table->enum('role', ['user', 'admin', 'moderator'])
           ->default('user')
           ->index();
-
     $table->timestamp('email_verified_at')->nullable();
-
     $table->boolean('is_active')->default(true)->index();
-
     $table->rememberToken();
-
     $table->timestamps();
     $table->softDeletes();
 });
