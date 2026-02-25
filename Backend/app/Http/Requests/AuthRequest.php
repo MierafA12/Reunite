@@ -14,25 +14,27 @@ class AuthRequest extends FormRequest
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
+        if ($this->is('*/login')) {
+            return [
+                'email' => ['required', 'email', 'string'],
+                'password' => ['required', 'string'],
+            ];
+        }
+
         return [
-            
-            'first_name'=>['required','min:3','string','max:255'],
-            'last_name'=>['required','min:3','string','max:255'],
-            'email'=>['required','email','unique:users,email'],
-            'password'=>['required','min:8','confirmed'],
-            'role'=>['required','in:user,admin,moderator'],
-            'middle_name'=>['required','min:3','string','max:255'],
-            'phone'=>['required','min:10','max:15','unique:user_profiles,phone'],
-            'workplace'=>['required','min:3','string','max:255'],
-            'address'=>['required','min:3','string','max:255'],
-           
+            'first_name' => ['required', 'string', 'min:2', 'max:255'],
+            'last_name' => ['required', 'string', 'min:2', 'max:255'],
+            'email' => ['required', 'email', 'unique:users,email', 'max:255'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'role' => ['required', 'in:user,admin,moderator'],
+            'middle_name' => ['nullable', 'string', 'max:255'],
+            'phone' => ['required', 'string', 'min:10', 'max:20', 'unique:user_profiles,phone'],
+            'workplace' => ['nullable', 'string', 'max:255'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'gender' => ['nullable', 'string', 'in:male,female'],
+            'profile_image' => ['nullable', 'string'],
         ];
     }
 }
