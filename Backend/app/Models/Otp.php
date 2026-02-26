@@ -38,13 +38,15 @@ class Otp extends Model
 
     public static function generate(string $identifier, string $action, int $expirySeconds = 120)
     {
-        // Invalidate previous OTPs for the same identifier and action
-        self::where('identifier', $identifier)
+        $identifier = trim($identifier);
+
+        // Invalidate ALL previous OTPs for the same identifier and action
+        static::query()
+            ->where('identifier', $identifier)
             ->where('action', $action)
-            ->where('used_at', null)
             ->delete();
 
-        return self::create([
+        return static::query()->create([
             'identifier' => $identifier,
             'otp_code' => str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT),
             'action' => $action,
