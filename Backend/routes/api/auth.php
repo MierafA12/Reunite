@@ -8,12 +8,16 @@ use Illuminate\Support\Facades\Route;
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 
+Route::post('forgot-password', [App\Http\Controllers\ForgotPasswordController::class, 'sendOtp']);
+Route::post('verify-reset-otp', [App\Http\Controllers\ForgotPasswordController::class, 'verifyOtp']);
+Route::post('reset-password', [App\Http\Controllers\ForgotPasswordController::class, 'resetPassword']);
+
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, 'verify'])
-        ->middleware(['signed'])
+    Route::post('/email/verify', [VerifyEmailController::class, 'verify'])
+        ->middleware(['throttle:3,1']) // 3 attempts per minute
         ->name('verification.verify');
 
     Route::post('/email/verification-notification', [VerifyEmailController::class, 'resend'])
-        ->middleware(['throttle:6,1'])
+        ->middleware(['throttle:1,1']) // 1 resend per minute
         ->name('verification.send');
 });
