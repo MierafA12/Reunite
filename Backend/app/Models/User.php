@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use App\Models\Otp;
 
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -55,6 +56,15 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Override the default email verification notification.
+     */
+    public function sendEmailVerificationNotification()
+    {
+        $otp = Otp::generate($this->email, 'registration');
+        $this->notify(new \App\Notifications\OtpNotification($otp->otp_code));
     }
 
     /**
