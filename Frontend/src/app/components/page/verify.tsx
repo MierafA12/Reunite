@@ -29,8 +29,9 @@ export default function VerifyCodePage({
   backLinkText = "Back to Forgot Password",
   showResendButton = true,
   showCloseButton = true,
-  closeLink = "/auth/login"
-}: VerifyCodePageProps) {
+  closeLink = "/auth/login",
+  error = null
+}: VerifyCodePageProps & { error?: string | null }) {
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
   const [code, setCode] = useState<string[]>(Array(6).fill(""));
 
@@ -96,7 +97,7 @@ export default function VerifyCodePage({
     <div className="min-h-screen flex items-center justify-center bg-dark p-4">
       <div className="relative w-full max-w-md bg-dark-light/30 backdrop-blur-sm border border-white/5 rounded-3xl shadow-2xl p-8 md:p-10 animate-fadeInUp">
 
-        
+
         {showCloseButton && (
           <Link
             href={closeLink}
@@ -116,9 +117,15 @@ export default function VerifyCodePage({
           </h1>
           <div className="w-12 h-1 bg-secondary rounded shadow-sm mb-6"></div>
 
-          <p className="text-gray-400 text-sm font-medium mb-8">
+          <p className="text-gray-400 text-sm font-medium mb-4">
             {description}
           </p>
+
+          {error && (
+            <div className="w-full bg-danger/10 border-l-4 border-danger p-3 rounded-r-lg mb-6 animate-fadeIn text-left">
+              <p className="text-danger text-xs font-semibold">{error}</p>
+            </div>
+          )}
 
           <div className="w-full space-y-8">
             <div className="flex justify-between gap-2">
