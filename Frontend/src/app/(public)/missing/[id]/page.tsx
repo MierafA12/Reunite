@@ -214,29 +214,33 @@ const PublicMissingPersonPage = async ({ params }: PageProps) => {
 
                 {/* SIDEBAR - REPORTER INFO */}
                 <aside className="space-y-8">
-                    <ReporterCard
-                        name={reporter.name}
-                        initials={reporter.initials}
-                        role={`${reporter.role} (${reporter.relation})`}
-                        message={reporter.message}
-                        ownerId={ownerId}
-                    />
+                    <div className="sticky top-24 space-y-8">
+                        <ReporterCard
+                            name={reporter.name}
+                            initials={reporter.initials}
+                            role={`${reporter.role} (${reporter.relation})`}
+                            message={reporter.message}
+                            ownerId={ownerId}
+                        />
 
-                    {/* REWARD CALLOUT */}
-                    {person.hasReward && (
-                        <div className="bg-green-500/10 border border-green-500/20 rounded-3xl p-8 text-center space-y-4">
-                            <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto">
-                                <DollarSign className="w-8 h-8 text-green-400" />
+                        {/* REWARD CALLOUT */}
+                        {person.hasReward && (
+                            <div className="bg-dark-light border border-white/5 rounded-3xl p-8 text-center space-y-4 shadow-xl relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-24 h-24 bg-green-500/5 -mr-8 -mt-8 rounded-full blur-2xl" />
+                                <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto border border-green-500/20 group-hover:scale-110 transition-transform duration-500">
+                                    <DollarSign className="w-8 h-8 text-green-400" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Active Reward</h3>
+                                    <p className="text-green-400 text-3xl font-black">{person.reward}</p>
+                                </div>
+                                <div className="h-px w-12 bg-white/10 mx-auto" />
+                                <p className="text-gray-400 text-sm italic">
+                                    For information leading to a successful reunion.
+                                </p>
                             </div>
-                            <div>
-                                <h3 className="text-xl font-bold text-white">Active Reward</h3>
-                                <p className="text-green-400 text-2xl font-black mt-1">{person.reward}</p>
-                            </div>
-                            <p className="text-gray-400 text-sm italic">
-                                For information leading to a successful reunion.
-                            </p>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </aside>
 
             </main>

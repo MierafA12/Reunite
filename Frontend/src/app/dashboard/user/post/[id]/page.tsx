@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Header from "@/app/components/layout/Header";
 import { InfoCard, ImageBox, VideoBox, Comment } from "@/app/components/ui/InfoCard";
-import { User, Calendar, MapPin, Flag, Clock, ShieldCheck } from "lucide-react";
+import { User, Calendar, MapPin, Flag, Clock, ShieldCheck, DollarSign } from "lucide-react";
+import ReporterCard from "@/app/components/ui/ReporterCard";
 import React from "react";
 
 interface PageProps {
@@ -35,6 +36,10 @@ const MissingPersonPage = async ({ params }: PageProps) => {
                             </span>
                             <span className="bg-white/10 backdrop-blur-md text-white/80 border border-white/10 px-4 py-1.5 rounded-full text-xs font-medium">
                                 Case #{id}
+                            </span>
+                            <span className="bg-green-500/20 text-green-400 border border-green-500/30 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+                                <DollarSign size={14} />
+                                Reward: ETB 50,000
                             </span>
                         </div>
 
@@ -141,40 +146,32 @@ const MissingPersonPage = async ({ params }: PageProps) => {
                     </div>
                 </div>
 
-                {/* SIDEBAR - REPORTER INFO */}
+                {/* SIDEBAR - REPORTER INFO & REWARD */}
                 <aside className="space-y-8">
-                    <div className="bg-dark-light border border-white/5 rounded-3xl p-8 sticky top-24">
-                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-                            <ShieldCheck className="w-5 h-5 text-secondary" />
-                            Verified Reporter
-                        </h2>
+                    <div className="sticky top-24 space-y-8">
+                        <ReporterCard
+                            name="Kebede Tesfaye"
+                            initials="KT"
+                            role="Family Member (Brother)"
+                            message="We are desperate to find him. Please help us by sharing this case."
+                            ownerId="1" // Assuming logged in user is owner
+                        />
 
-                        <div className="flex items-center gap-4 mb-6">
-                            <div className="w-14 h-14 rounded-full bg-secondary/10 flex items-center justify-center border border-secondary/20 font-bold text-xl text-secondary">
-                                KT
+                        {/* REWARD CALLOUT */}
+                        <div className="bg-dark-light border border-white/5 rounded-3xl p-8 text-center space-y-4 shadow-xl relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-green-500/5 -mr-8 -mt-8 rounded-full blur-2xl" />
+                            <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto border border-green-500/20 group-hover:scale-110 transition-transform duration-500">
+                                <DollarSign className="w-8 h-8 text-green-400" />
                             </div>
                             <div>
-                                <h4 className="font-bold text-white leading-tight">Kebede Tesfaye</h4>
-                                <p className="text-sm text-gray-500">Family Member (Brother)</p>
+                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Active Reward</h3>
+                                <p className="text-green-400 text-3xl font-black">ETB 50,000</p>
                             </div>
+                            <div className="h-px w-12 bg-white/10 mx-auto" />
+                            <p className="text-gray-400 text-sm italic">
+                                For information leading to a successful reunion.
+                            </p>
                         </div>
-
-                        <div className="space-y-4 mb-8">
-                            <div className="text-sm text-gray-400 leading-relaxed italic">
-                                "We are desperate to find him. Please help us by sharing this case."
-                            </div>
-                            <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
-                                <p className="text-xs text-gray-400 uppercase font-bold mb-1">Response Time</p>
-                                <p className="text-sm font-medium">Usually within 2 hours</p>
-                            </div>
-                        </div>
-
-                        <button className="w-full bg-white text-dark py-4 rounded-2xl font-bold hover:bg-gray-200 transition-colors mb-4">
-                            Contact Family
-                        </button>
-                        <button className="w-full border border-white/10 text-white py-4 rounded-2xl font-bold hover:bg-white/5 transition-colors">
-                            Share Case
-                        </button>
                     </div>
                 </aside>
 

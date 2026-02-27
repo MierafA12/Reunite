@@ -28,7 +28,7 @@ export default function ReporterCard({
 
     if (isOwner) {
         return (
-            <div className="bg-dark-light border border-white/5 rounded-3xl p-8 sticky top-24 overflow-hidden relative">
+            <div className="bg-dark-light border border-white/5 rounded-3xl p-8 overflow-hidden relative">
                 <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
                     <ShieldCheck className="w-5 h-5 text-secondary" />
                     Management View
@@ -44,7 +44,7 @@ export default function ReporterCard({
     }
 
     return (
-        <div className="bg-dark-light border border-white/5 rounded-3xl p-8 sticky top-24 overflow-hidden relative">
+        <div className="bg-dark-light border border-white/5 rounded-3xl p-8 overflow-hidden relative">
             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
                 {isVerified && <ShieldCheck className="w-5 h-5 text-secondary" />}
                 {isVerified ? "Verified Reporter" : "Reporter Info"}
