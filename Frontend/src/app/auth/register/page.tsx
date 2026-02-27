@@ -1,13 +1,14 @@
 "use client";
 
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useRouter, useSearchParams } from "next/navigation";
-import { X, ArrowLeft } from "lucide-react";
+import { X, ArrowLeft, Loader2 } from "lucide-react";
 import Button from "@/app/components/ui/Button";
-
 import { useAuth } from "@/app/context/AuthContext";
+import { authApi } from "@/app/lib/api";
 
 interface RegisterForm {
   first_name: string;
@@ -27,6 +28,9 @@ export default function RegisterPage() {
   const callbackUrl = searchParams.get("callbackUrl");
   const { login } = useAuth();
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
@@ -34,29 +38,44 @@ export default function RegisterPage() {
     formState: { errors },
   } = useForm<RegisterForm>();
 
-  const onSubmit = (data: RegisterForm) => {
-    console.log("Register data:", data);
+  const onSubmit = async (data: RegisterForm) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      // Map frontend fields to backend expected fields
+      const payload = {
+        ...data,
+        password_confirmation: data.confirmPassword,
+        role: "user", // Default role
+      };
 
-    // Simulate frontend registration by logging user in locally
-    const newUser = {
-      id: Math.random().toString(36).substr(2, 9),
-      first_name: data.first_name,
-      middle_name: data.middle_name,
-      last_name: data.last_name,
-      name: `${data.first_name} ${data.last_name}`,
-      email: data.email,
-      phone: data.phone,
-      workplace: data.workplace,
-      address: data.address,
-    };
+      const response = await authApi.register(payload);
+      console.log("Registration successful:", response);
 
-    login(newUser);
+      // Log the user in locally
+      login(response.user, response.access_token);
 
-    // After successful registration, redirect to verification page
-    router.push(`/auth/verify?type=register&email=${encodeURIComponent(data.email)}&callbackUrl=${encodeURIComponent(callbackUrl || "/dashboard/user")}`);
+      // After successful registration, redirect to verification page
+      router.push(`/auth/verify?type=register&email=${encodeURIComponent(data.email)}&callbackUrl=${encodeURIComponent(callbackUrl || "/dashboard/user")}`);
+    } catch (err: any) {
+      console.error("Registration failed:", err);
+      if (!err.response) {
+        setError("Network error: Could not connect to the server. Please ensure your backend is running.");
+      } else if (err.response?.data?.errors) {
+        // Handle Laravel validation errors (object of arrays)
+        const validationErrors = Object.values(err.response.data.errors).flat().join(" ");
+        setError(validationErrors);
+      } else if (err.response?.data?.error) {
+        setError(err.response.data.error);
+      } else if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError("Registration failed. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
-
-  const goBack = () => router.back();
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-dark via-neutral-dark to-primary p-4">
@@ -65,7 +84,7 @@ export default function RegisterPage() {
         {/* Close Button */}
         <Link
           href="/"
-          className="absolute top-4 right-4 z-10 bg-red-500 text-white rounded-full p-2 hover:scale-105 transition"
+          className="absolute top-4 right-4 z-10 bg-red-500 text-white rounded-full p-2 hover:scale-105 transition shadow-lg"
         >
           <X size={18} />
         </Link>
@@ -83,8 +102,6 @@ export default function RegisterPage() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
 
           <div className="relative z-10 flex flex-col h-full justify-between">
-
-
             {/* Welcome Text */}
             <div className="mt-auto animate-fadeInUp">
               <h2 className="text-4xl font-bold mb-4 drop-shadow-2xl">Welcome to Reunite</h2>
@@ -118,14 +135,20 @@ export default function RegisterPage() {
           <div className="w-14 h-1 bg-primary rounded mb-6"></div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {error && (
+              <div className="bg-danger/10 border-l-4 border-danger p-4 rounded-r-lg animate-fadeIn text-danger text-sm font-medium">
+                {error}
+              </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div>
                 <label className="block text-xs font-semibold text-gray-600 mb-1">First Name</label>
                 <input
                   type="text"
+                  disabled={isLoading}
                   {...register("first_name", { required: "First name required" })}
-                  className="w-full border-b border-gray-300 py-2 outline-none focus:border-primary"
+                  className="w-full border-b border-gray-300 py-2 outline-none focus:border-primary transition-colors hover:border-primary/50"
                 />
                 {errors.first_name && <p className="text-red-500 text-xs mt-1">{errors.first_name.message}</p>}
               </div>
@@ -134,8 +157,9 @@ export default function RegisterPage() {
                 <label className="block text-xs font-semibold text-gray-600 mb-1">Middle Name</label>
                 <input
                   type="text"
+                  disabled={isLoading}
                   {...register("middle_name")}
-                  className="w-full border-b border-gray-300 py-2 outline-none focus:border-primary"
+                  className="w-full border-b border-gray-300 py-2 outline-none focus:border-primary transition-colors hover:border-primary/50"
                 />
               </div>
 
@@ -143,8 +167,9 @@ export default function RegisterPage() {
                 <label className="block text-xs font-semibold text-gray-600 mb-1">Last Name</label>
                 <input
                   type="text"
+                  disabled={isLoading}
                   {...register("last_name", { required: "Last name required" })}
-                  className="w-full border-b border-gray-300 py-2 outline-none focus:border-primary"
+                  className="w-full border-b border-gray-300 py-2 outline-none focus:border-primary transition-colors hover:border-primary/50"
                 />
                 {errors.last_name && <p className="text-red-500 text-xs mt-1">{errors.last_name.message}</p>}
               </div>
@@ -154,8 +179,15 @@ export default function RegisterPage() {
               <label className="block text-xs font-semibold text-gray-600 mb-1">Email</label>
               <input
                 type="email"
-                {...register("email", { required: "Email is required" })}
-                className="w-full border-b border-gray-300 py-2 outline-none focus:border-primary"
+                disabled={isLoading}
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: "Invalid email address"
+                  }
+                })}
+                className="w-full border-b border-gray-300 py-2 outline-none focus:border-primary transition-colors hover:border-primary/50"
               />
               {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
             </div>
@@ -165,8 +197,9 @@ export default function RegisterPage() {
                 <label className="block text-xs font-semibold text-gray-600 mb-1">Workplace</label>
                 <input
                   type="text"
+                  disabled={isLoading}
                   {...register("workplace")}
-                  className="w-full border-b border-gray-300 py-2 outline-none focus:border-primary"
+                  className="w-full border-b border-gray-300 py-2 outline-none focus:border-primary transition-colors hover:border-primary/50"
                 />
               </div>
 
@@ -174,8 +207,9 @@ export default function RegisterPage() {
                 <label className="block text-xs font-semibold text-gray-600 mb-1">Address</label>
                 <input
                   type="text"
+                  disabled={isLoading}
                   {...register("address")}
-                  className="w-full border-b border-gray-300 py-2 outline-none focus:border-primary"
+                  className="w-full border-b border-gray-300 py-2 outline-none focus:border-primary transition-colors hover:border-primary/50"
                 />
               </div>
 
@@ -183,8 +217,9 @@ export default function RegisterPage() {
                 <label className="block text-xs font-semibold text-gray-600 mb-1">Phone</label>
                 <input
                   type="text"
+                  disabled={isLoading}
                   {...register("phone", { required: "Phone is required" })}
-                  className="w-full border-b border-gray-300 py-2 outline-none focus:border-primary"
+                  className="w-full border-b border-gray-300 py-2 outline-none focus:border-primary transition-colors hover:border-primary/50"
                 />
                 {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
               </div>
@@ -194,8 +229,9 @@ export default function RegisterPage() {
               <label className="block text-xs font-semibold text-gray-600 mb-1">Password</label>
               <input
                 type="password"
-                {...register("password", { required: "Password required", minLength: { value: 6, message: "Min 6 chars" } })}
-                className="w-full border-b border-gray-300 py-2 outline-none focus:border-primary"
+                disabled={isLoading}
+                {...register("password", { required: "Password required", minLength: { value: 8, message: "Min 8 chars" } })}
+                className="w-full border-b border-gray-300 py-2 outline-none focus:border-primary transition-colors hover:border-primary/50"
               />
               {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
             </div>
@@ -204,11 +240,12 @@ export default function RegisterPage() {
               <label className="block text-xs font-semibold text-gray-600 mb-1">Confirm Password</label>
               <input
                 type="password"
+                disabled={isLoading}
                 {...register("confirmPassword", {
                   required: "Confirm password",
                   validate: (value) => value === watch("password") || "Passwords do not match",
                 })}
-                className="w-full border-b border-gray-300 py-2 outline-none focus:border-primary"
+                className="w-full border-b border-gray-300 py-2 outline-none focus:border-primary transition-colors hover:border-primary/50"
               />
               {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>}
             </div>
@@ -227,15 +264,23 @@ export default function RegisterPage() {
 
             <Button
               type="submit"
-              className="w-full py-3 rounded-xl"
+              className="w-full py-3 rounded-xl flex items-center justify-center gap-2"
+              disabled={isLoading}
             >
-              Open Account
+              {isLoading ? (
+                <>
+                  <Loader2 className="animate-spin" size={20} />
+                  <span>Creating Account...</span>
+                </>
+              ) : (
+                "Open Account"
+              )}
             </Button>
 
             {/* Login Link */}
             <p className="text-sm text-center text-gray-500">
               Already have an account?{" "}
-              <Link href={callbackUrl ? `/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/auth/login"} className="text-primary font-semibold">
+              <Link href={callbackUrl ? `/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/auth/login"} className="text-primary font-semibold hover:underline">
                 Sign In
               </Link>
             </p>

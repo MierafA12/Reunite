@@ -18,7 +18,7 @@ interface User {
 interface AuthContextType {
     user: User | null;
     isLoggedIn: boolean;
-    login: (userData: User) => void;
+    login: (userData: User, token: string) => void;
     logout: () => void;
 }
 
@@ -29,24 +29,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
-        // Check if user is logged in (simulated with localStorage)
+        // Check if user is logged in
         const storedUser = localStorage.getItem("reunite_user");
-        if (storedUser) {
+        const token = localStorage.getItem("reunite_token");
+        if (storedUser && token) {
             setUser(JSON.parse(storedUser));
             setIsLoggedIn(true);
         }
     }, []);
 
-    const login = (userData: User) => {
+    const login = (userData: User, token: string) => {
         setUser(userData);
         setIsLoggedIn(true);
         localStorage.setItem("reunite_user", JSON.stringify(userData));
+        localStorage.setItem("reunite_token", token);
     };
 
     const logout = () => {
         setUser(null);
         setIsLoggedIn(false);
         localStorage.removeItem("reunite_user");
+        localStorage.removeItem("reunite_token");
     };
 
     return (
