@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AuthRequest;
 use App\Models\User;
 use App\Models\UserProfile;
+use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -43,7 +44,7 @@ class AuthController extends Controller
 
                 return response()->json([
                     'message' => 'User created successfully',
-                    'user' => $user->load('profile'),
+                    'user' => new UserResource($user->load('profile')),
                     'access_token' => $token,
                     'token_type' => 'Bearer',
                 ], 201);
@@ -74,7 +75,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'message' => 'Login successful',
-                'user' => $user->load('profile'),
+                'user' => new UserResource($user->load('profile')),
                 'access_token' => $token,
                 'token_type' => 'Bearer',
             ], 200);
