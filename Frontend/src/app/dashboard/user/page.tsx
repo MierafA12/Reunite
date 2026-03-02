@@ -142,8 +142,10 @@ export default function UserDashboard() {
                                     <span className="text-white font-medium">{user?.email || "n/a"}</span>
                                 </div>
                                 <div className="flex justify-between items-center text-sm border-b border-white/5 pb-4">
-                                    <span className="text-gray-400">Account Type</span>
-                                    <span className="text-success font-medium">Verified Hero</span>
+                                    <span className="text-gray-400">Account Status</span>
+                                    <span className={`${user?.email_verified_at ? 'text-success' : 'text-warning'} font-medium`}>
+                                        {user?.email_verified_at ? 'Verified' : 'Unverified'}
+                                    </span>
                                 </div>
                                 <div className="flex justify-between items-center text-sm">
                                     <span className="text-gray-400">Cases Managed</span>
