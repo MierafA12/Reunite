@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const API_URL = "/api";
+const CSRF_URL = "/sanctum/csrf-cookie";
 
 const api = axios.create({
     baseURL: API_URL,
@@ -12,35 +13,27 @@ const api = axios.create({
     },
 });
 
-// Add a request interceptor to include the auth token
-api.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem("reunite_token");
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
-
 // Add a response interceptor to handle errors globally
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        // You can handle unified error responses here
         if (error.response?.status === 401) {
-            // Handle unauthorized (e.g., redirect to login or clear token)
-            localStorage.removeItem("reunite_token");
             localStorage.removeItem("reunite_user");
+            // Only redirect if not on auth pages to avoid loops
+            if (typeof window !== "undefined" && !window.location.pathname.startsWith("/auth")) {
+                window.location.href = "/auth/login";
+            }
         }
         return Promise.reject(error);
     }
 );
 
 export const authApi = {
+    getCsrfCookie: async () => {
+        return await axios.get(CSRF_URL, {
+            withCredentials: true,
+        });
+    },
     register: async (data: any) => {
         const response = await api.post("/register", data);
         return response.data;
@@ -67,6 +60,21 @@ export const authApi = {
     },
     resendVerification: async () => {
         const response = await api.post("/email/verification-notification");
+        return response.data;
+    },
+    logout: async () => {
+        const response = await api.post("/logout");
+        return response.data;
+    },
+};
+
+export const profileApi = {
+    getUserProfile: async () => {
+        const response = await api.get("/profile");
+        return response.data;
+    },
+    updateProfile: async (data: any) => {
+        const response = await api.post("/profile/update", data);
         return response.data;
     },
 };
