@@ -20,4 +20,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/email/verification-notification', [VerifyEmailController::class, 'resend'])
         ->middleware(['throttle:1,1']) // 1 resend per minute
         ->name('verification.send');
+
+    Route::post('/logout', [AuthController::class, 'logout']);
 });
