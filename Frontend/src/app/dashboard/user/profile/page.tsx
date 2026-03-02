@@ -7,15 +7,25 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAuth } from "@/app/context/AuthContext";
 import Button from "@/app/components/ui/Button";
+import { profileApi, authApi } from "@/app/lib/api";
 
 export default function ProfileSettingsPage() {
     const router = useRouter();
-    const { user, login } = useAuth();
+    const { user, updateUser } = useAuth();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [isSaving, setIsSaving] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+    // Verification State
+    const [showVerification, setShowVerification] = useState(false);
+    const [otpCode, setOtpCode] = useState("");
+    const [isVerifying, setIsVerifying] = useState(false);
+    const [isResending, setIsResending] = useState(false);
+    const [verificationError, setVerificationError] = useState<string | null>(null);
+    const [verificationSuccess, setVerificationSuccess] = useState(false);
 
     const [formData, setFormData] = useState({
         first_name: "",
@@ -25,6 +35,9 @@ export default function ProfileSettingsPage() {
         phone: "",
         workplace: "",
         address: "",
+        gender: "",
+        date_of_birth: "",
+        bio: "",
         profile_image: ""
     });
 
@@ -32,16 +45,19 @@ export default function ProfileSettingsPage() {
         if (user) {
             setFormData({
                 first_name: user.first_name || "",
-                middle_name: user.middle_name || "",
+                middle_name: user.middle_name || user.profile?.middle_name || "",
                 last_name: user.last_name || "",
                 email: user.email || "",
-                phone: user.phone || "",
-                workplace: user.workplace || "",
-                address: user.address || "",
-                profile_image: user.profile_image || ""
+                phone: user.phone || user.profile?.phone || "",
+                workplace: user.workplace || user.profile?.workplace || "",
+                address: user.address || user.profile?.address || "",
+                gender: user.profile?.gender || "",
+                date_of_birth: user.profile?.date_of_birth || "",
+                bio: user.profile?.bio || "",
+                profile_image: user.profile_image || user.profile?.profile_image || ""
             });
-            if (user.profile_image) {
-                setPreviewImage(user.profile_image);
+            if (user.profile_image || user.profile?.profile_image) {
+                setPreviewImage(user.profile_image || user.profile?.profile_image || null);
             }
         }
     }, [user]);
@@ -49,6 +65,7 @@ export default function ProfileSettingsPage() {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+        if (error) setError(null);
     };
 
     const handleImageClick = () => {
@@ -68,24 +85,65 @@ export default function ProfileSettingsPage() {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSaving(true);
+        setError(null);
 
-        // Simulate API call
-        setTimeout(() => {
-            if (user) {
-                const updatedUser = {
-                    ...user,
-                    ...formData,
-                    name: `${formData.first_name} ${formData.last_name}`
-                };
-                login(updatedUser);
+        try {
+            const response = await profileApi.updateProfile(formData);
+
+            if (response.user) {
+                // Flatten user data to match AuthContext User interface if needed, 
+                // but the backend returns user with profile loaded.
+                // Our AuthContext User interface might need adjustment to handle the nested profile.
+                updateUser(response.user);
+
+                setShowSuccess(true);
+                setTimeout(() => setShowSuccess(false), 5000);
             }
+        } catch (err: any) {
+            console.error("Profile update error:", err);
+            setError(err.response?.data?.message || "Failed to update profile. Please try again.");
+        } finally {
             setIsSaving(false);
-            setShowSuccess(true);
-            setTimeout(() => setShowSuccess(false), 3000);
-        }, 1500);
+        }
+    };
+
+    const handleResendVerification = async () => {
+        setIsResending(true);
+        setVerificationError(null);
+        try {
+            await authApi.resendVerification();
+            setShowVerification(true);
+        } catch (err: any) {
+            setVerificationError(err.response?.data?.message || "Failed to resend code.");
+        } finally {
+            setIsResending(false);
+        }
+    };
+
+    const handleVerifyOTP = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsVerifying(true);
+        setVerificationError(null);
+        try {
+            const response = await authApi.verifyEmail({ otp_code: otpCode });
+            setVerificationSuccess(true);
+            // Refresh user data to get updated verification status
+            const profileResponse = await profileApi.getUserProfile();
+            if (profileResponse.user) {
+                updateUser(profileResponse.user);
+            }
+            setTimeout(() => {
+                setShowVerification(false);
+                setVerificationSuccess(false);
+            }, 3000);
+        } catch (err: any) {
+            setVerificationError(err.response?.data?.message || "Invalid verification code.");
+        } finally {
+            setIsVerifying(false);
+        }
     };
 
     return (
@@ -109,7 +167,7 @@ export default function ProfileSettingsPage() {
                 </div>
 
                 <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                    {/* LEFT COLUMN: Profile Image */}
+                    {/* LEFT COLUMN: Profile Image & Verification */}
                     <div className="space-y-8">
                         <div className="bg-dark-light/30 border border-white/5 rounded-3xl p-8 flex flex-col items-center text-center">
                             <div
@@ -142,9 +200,61 @@ export default function ProfileSettingsPage() {
                             <p className="text-gray-500 text-sm mb-6">{formData.email}</p>
 
                             <div className="w-full pt-6 border-t border-white/5 space-y-4">
-                                <div className="flex items-center gap-3 text-sm text-gray-400">
-                                    <ShieldCheck size={18} className="text-secondary" />
-                                    <span>Verified Account Status</span>
+                                <div className="flex flex-col gap-4">
+                                    <div className="flex items-center justify-between w-full">
+                                        <div className="flex items-center gap-2 text-sm text-gray-400">
+                                            <ShieldCheck size={18} className={user?.email_verified_at ? "text-success" : "text-gray-600"} />
+                                            <span>Account Status</span>
+                                        </div>
+                                        {user?.email_verified_at ? (
+                                            <span className="text-[10px] bg-success/20 text-success px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Verified</span>
+                                        ) : (
+                                            <span className="text-[10px] bg-warning/20 text-warning px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Unverified</span>
+                                        )}
+                                    </div>
+
+                                    {!user?.email_verified_at && !showVerification && (
+                                        <button
+                                            type="button"
+                                            onClick={handleResendVerification}
+                                            disabled={isResending}
+                                            className="text-xs font-bold text-secondary hover:underline disabled:opacity-50"
+                                        >
+                                            {isResending ? "Sending code..." : "Verify Account Now"}
+                                        </button>
+                                    )}
+
+                                    {showVerification && (
+                                        <div className="space-y-3 pt-2">
+                                            <p className="text-[10px] text-gray-400">Enter the 6-digit code sent to your email.</p>
+                                            <div className="flex gap-2">
+                                                <input
+                                                    value={otpCode}
+                                                    onChange={(e) => setOtpCode(e.target.value)}
+                                                    placeholder="000000"
+                                                    maxLength={6}
+                                                    className="w-full bg-dark border border-white/10 rounded-xl px-3 py-2 text-center text-sm font-mono tracking-widest outline-none focus:border-secondary"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={handleVerifyOTP}
+                                                    disabled={isVerifying || otpCode.length !== 6}
+                                                    className="bg-secondary text-white px-4 py-2 rounded-xl text-xs font-bold disabled:opacity-50"
+                                                >
+                                                    {isVerifying ? "..." : "Verify"}
+                                                </button>
+                                            </div>
+                                            {verificationError && <p className="text-[10px] text-danger">{verificationError}</p>}
+                                            {verificationSuccess && <p className="text-[10px] text-success">Verified successfully!</p>}
+                                            <button
+                                                type="button"
+                                                onClick={handleResendVerification}
+                                                className="text-[10px] text-gray-500 hover:text-white underline block"
+                                            >
+                                                Resend Code
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -153,6 +263,12 @@ export default function ProfileSettingsPage() {
                             <div className="bg-success/10 border border-success/20 rounded-2xl p-4 flex items-center gap-3 animate-fadeIn">
                                 <CheckCircle2 className="text-success" size={20} />
                                 <p className="text-success text-sm font-medium">Profile updated successfully!</p>
+                            </div>
+                        )}
+
+                        {error && (
+                            <div className="bg-danger/10 border border-danger/20 rounded-2xl p-4 flex items-center gap-3 animate-fadeIn text-danger text-sm font-medium">
+                                {error}
                             </div>
                         )}
                     </div>
@@ -240,6 +356,44 @@ export default function ProfileSettingsPage() {
                                     </div>
                                 </div>
 
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-gray-500 uppercase tracking-widest px-1">Date of Birth</label>
+                                        <input
+                                            name="date_of_birth"
+                                            type="date"
+                                            value={formData.date_of_birth}
+                                            onChange={handleInputChange}
+                                            className="w-full bg-dark border border-white/10 rounded-2xl px-5 py-3.5 outline-none focus:border-secondary transition-all text-white"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-gray-500 uppercase tracking-widest px-1">Gender</label>
+                                        <select
+                                            name="gender"
+                                            value={formData.gender}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, gender: e.target.value }))}
+                                            className="w-full bg-dark border border-white/10 rounded-2xl px-5 py-3.5 outline-none focus:border-secondary transition-all text-white appearance-none"
+                                        >
+                                            <option value="">Select Gender</option>
+                                            <option value="male">Male</option>
+                                            <option value="female">Female</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-gray-500 uppercase tracking-widest px-1">Bio / About Me</label>
+                                    <textarea
+                                        name="bio"
+                                        value={formData.bio}
+                                        onChange={handleInputChange}
+                                        placeholder="A little about yourself..."
+                                        className="w-full bg-dark border border-white/10 rounded-2xl px-5 py-3.5 outline-none focus:border-secondary transition-all min-h-[100px]"
+                                    />
+                                </div>
+
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-gray-500 uppercase tracking-widest px-1">Full Address</label>
                                     <div className="relative">
@@ -249,7 +403,7 @@ export default function ProfileSettingsPage() {
                                             value={formData.address}
                                             onChange={handleInputChange}
                                             placeholder="Street, District, City"
-                                            className="w-full bg-dark border border-white/10 rounded-2xl pl-12 pr-5 py-3.5 outline-none focus:border-secondary transition-all min-h-[100px]"
+                                            className="w-full bg-dark border border-white/10 rounded-2xl pl-12 pr-5 py-3.5 outline-none focus:border-secondary transition-all min-h-[80px]"
                                         />
                                     </div>
                                 </div>
