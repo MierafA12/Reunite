@@ -24,7 +24,7 @@ class AuthController extends Controller
                     'last_name' => $validated['last_name'],
                     'email' => $validated['email'],
                     'password' => Hash::make($validated['password']),
-                    'role' => $validated['role'],
+                    'role' => $validated['role'] ?? 'user',
                 ]);
 
                 UserProfile::create([
@@ -39,44 +39,38 @@ class AuthController extends Controller
 
                 event(new Registered($user));
 
-                $token = $user->createToken('auth_token')->plainTextToken;
+                auth()->login($user);
 
                 return response()->json([
                     'message' => 'User created successfully',
                     'user' => $user->load('profile'),
-                    'access_token' => $token,
-                    'token_type' => 'Bearer',
                 ], 201);
             });
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'User registration failed',
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine()
             ], 500);
         }
     }
+
     public function login(AuthRequest $request)
     {
         try {
             $validated = $request->validated();
 
-            $user = User::where('email', $validated['email'])->first();
-
-            if (!$user || !Hash::check($validated['password'], $user->password)) {
+            if (!auth()->attempt($request->only('email', 'password'), $request->boolean('remember'))) {
                 return response()->json([
                     'message' => 'Invalid credentials'
                 ], 401);
             }
 
-            $token = $user->createToken('auth_token')->plainTextToken;
+            $request->session()->regenerate();
+            $user = auth()->user();
 
             return response()->json([
                 'message' => 'Login successful',
                 'user' => $user->load('profile'),
-                'access_token' => $token,
-                'token_type' => 'Bearer',
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -84,5 +78,17 @@ class AuthController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function logout(Request $request)
+    {
+        auth()->guard('web')->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return response()->json([
+            'message' => 'Logged out successfully'
+        ]);
     }
 }
