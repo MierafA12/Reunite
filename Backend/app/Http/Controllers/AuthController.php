@@ -21,6 +21,7 @@ class AuthController extends Controller
 
                 $user = User::create([
                     'first_name' => $validated['first_name'],
+                    'middle_name' => $validated['middle_name'] ?? null,
                     'last_name' => $validated['last_name'],
                     'email' => $validated['email'],
                     'password' => Hash::make($validated['password']),
@@ -30,7 +31,6 @@ class AuthController extends Controller
                 UserProfile::create([
                     'user_id' => $user->id,
                     'profile_image' => $validated['profile_image'] ?? null,
-                    'middle_name' => $validated['middle_name'] ?? null,
                     'phone' => $validated['phone'],
                     'workplace' => $validated['workplace'] ?? null,
                     'address' => $validated['address'] ?? null,

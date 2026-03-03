@@ -44,6 +44,7 @@ class ProfileController extends Controller
             // Update user core information
             $user->update([
                 'first_name' => $validated['first_name'],
+                'middle_name' => $validated['middle_name'] ?? null,
                 'last_name' => $validated['last_name'],
             ]);
 
@@ -51,7 +52,6 @@ class ProfileController extends Controller
             $user->profile()->updateOrCreate(
                 ['user_id' => $user->id],
                 [
-                    'middle_name' => $validated['middle_name'] ?? null,
                     'phone' => $validated['phone'] ?? null,
                     'workplace' => $validated['workplace'] ?? null,
                     'address' => $validated['address'] ?? null,
