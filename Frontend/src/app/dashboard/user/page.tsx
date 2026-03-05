@@ -30,7 +30,7 @@ export default function UserDashboard() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
                     <div>
                         <h1 className="text-4xl font-bold">Your <span className="text-secondary">Profile</span></h1>
-                        <p className="text-gray-400 mt-2">Welcome back, {user?.name || "User"}. Manage your reported cases here.</p>
+                        <p className="text-gray-400 mt-2">Welcome back. Manage your reported cases here.</p>
                     </div>
                     <div className="flex items-center gap-4">
                         <Button href="/" variant="outline" className="px-6 py-3 rounded-xl font-bold border-white/10 text-white hover:bg-white/5 transition-all hidden sm:flex items-center gap-2">
