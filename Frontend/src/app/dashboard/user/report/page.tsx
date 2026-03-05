@@ -53,38 +53,16 @@ export default function ReportPage() {
         setFormData(prev => ({ ...prev, [name]: checked }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setShowVerification(true);
-    };
 
-    const handleVerifyCode = (code: string) => {
-        console.log("Verification code:", code);
-        setIsVerifying(true);
+        // Skip verification and show success
+        setIsSubmitted(true);
         setTimeout(() => {
-            setIsVerifying(false);
-            setShowVerification(false);
-            setIsSubmitted(true);
-            setTimeout(() => {
-                router.push("/dashboard/user");
-            }, 4000);
-        }, 2000);
+            router.push("/dashboard/user");
+        }, 4000);
     };
 
-    // Show verification page
-    if (showVerification) {
-        return (
-            <VerifyCodePage
-                onSubmit={handleVerifyCode}
-                onBack={() => setShowVerification(false)}
-                isLoading={isVerifying}
-                title="Verify Report Submission"
-                description="We've sent a 6-digit verification code to your registered email. Please enter it below to authorize this report."
-                backLinkText="Back to Report Form"
-                showResendButton={true}
-            />
-        );
-    }
 
     if (isSubmitted) {
         return (

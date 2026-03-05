@@ -45,7 +45,7 @@ export default function ProfileSettingsPage() {
         if (user) {
             setFormData({
                 first_name: user.first_name || "",
-                middle_name: user.middle_name || user.profile?.middle_name || "",
+                middle_name: user.middle_name || "",
                 last_name: user.last_name || "",
                 email: user.email || "",
                 phone: user.phone || user.profile?.phone || "",
@@ -196,7 +196,9 @@ export default function ProfileSettingsPage() {
                                 accept="image/*"
                                 className="hidden"
                             />
-                            <h3 className="text-xl font-bold">{formData.first_name} {formData.last_name || "New User"}</h3>
+                            <h3 className="text-xl font-bold">
+                                {[formData.first_name, formData.middle_name, formData.last_name].filter(Boolean).join(" ") || "New User"}
+                            </h3>
                             <p className="text-gray-500 text-sm mb-6">{formData.email}</p>
 
                             <div className="w-full pt-6 border-t border-white/5 space-y-4">
