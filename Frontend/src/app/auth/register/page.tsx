@@ -42,7 +42,10 @@ export default function RegisterPage() {
     setIsLoading(true);
     setError(null);
     try {
-      // Map frontend fields to backend expected fields
+      // Step 1: Get CSRF cookie
+      await authApi.getCsrfCookie();
+
+      // Step 2: Register
       const payload = {
         ...data,
         password_confirmation: data.confirmPassword,
@@ -53,7 +56,7 @@ export default function RegisterPage() {
       console.log("Registration successful:", response);
 
       // Log the user in locally
-      login(response.user, response.access_token);
+      login(response.user);
 
       // After successful registration, redirect to verification page
       router.push(`/auth/verify?type=register&email=${encodeURIComponent(data.email)}&callbackUrl=${encodeURIComponent(callbackUrl || "/dashboard/user")}`);

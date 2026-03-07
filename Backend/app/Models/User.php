@@ -34,15 +34,29 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected $fillable = [
         'first_name',
+        'middle_name',
         'last_name',
         'email',
         'password',
         'role',
     ];
 
+    /**
+     * The accessors to append to the model's array form.
+     */
+    protected $appends = ['name'];
+
     public function profile()
     {
         return $this->hasOne(UserProfile::class);
+    }
+
+    /**
+     * Get the user's full name.
+     */
+    public function getNameAttribute()
+    {
+        return trim("{$this->first_name} {$this->middle_name} {$this->last_name}");
     }
 
     protected $hidden = [

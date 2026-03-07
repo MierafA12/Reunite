@@ -13,6 +13,7 @@ import { authApi } from "@/app/lib/api";
 interface LoginForm {
   email: string;
   password: string;
+  remember?: boolean;
 }
 
 export default function LoginPage() {
@@ -33,11 +34,15 @@ export default function LoginPage() {
     setIsLoading(true);
     setError(null);
     try {
+      // Step 1: Get CSRF cookie
+      await authApi.getCsrfCookie();
+
+      // Step 2: Login
       const response = await authApi.login(data);
       console.log("Login successful:", response);
 
-      // Update local context with user and token
-      login(response.user, response.access_token);
+      // Update local context
+      login(response.user);
 
       // Redirect to callbackUrl if present, otherwise dashboard
       if (callbackUrl) {
@@ -175,7 +180,11 @@ export default function LoginPage() {
             {/* Actions */}
             <div className="flex items-center justify-between py-2">
               <label className="flex items-center gap-2 cursor-pointer group">
-                <input type="checkbox" className="w-4 h-4 rounded border-neutral-light text-primary focus:ring-primary cursor-pointer" />
+                <input
+                  type="checkbox"
+                  {...register("remember")}
+                  className="w-4 h-4 rounded border-neutral-light text-primary focus:ring-primary cursor-pointer"
+                />
                 <span className="text-sm text-neutral group-hover:text-neutral-dark transition-colors font-medium">Remember me</span>
               </label>
               <Link

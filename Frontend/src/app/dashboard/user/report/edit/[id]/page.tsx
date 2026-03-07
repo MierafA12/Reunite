@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Header from "@/app/components/layout/Header";
-import { User, MapPin, Calendar, Camera, FileText, ArrowRight, ArrowLeft, CheckCircle2, ShieldCheck, Upload, Save } from "lucide-react";
+import { User, MapPin, Calendar, Camera, FileText, ArrowRight, ArrowLeft, CheckCircle2, ShieldCheck, Upload, Save, DollarSign } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
 import Button from "@/app/components/ui/Button";
@@ -29,7 +29,9 @@ export default function EditReportPage() {
         location: "Piazza Area, Addis Ababa",
         date: "2026-01-12",
         description: "Abebe was wearing a bright blue jacket with silver reflectors, black trousers, and white sports shoes.",
-        nationality: "Ethiopian"
+        nationality: "Ethiopian",
+        reward: "ETB 50,000",
+        hasReward: true
     });
 
     const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
@@ -195,6 +197,39 @@ export default function EditReportPage() {
                                         className="w-full bg-dark border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-secondary transition-all min-h-[150px]"
                                     />
                                 </div>
+
+                                <div className="p-6 bg-secondary/5 border border-secondary/10 rounded-3xl space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-secondary/20 rounded-full flex items-center justify-center">
+                                                <DollarSign size={20} className="text-secondary" />
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-white">Offer Reward</p>
+                                                <p className="text-xs text-gray-400">Optional reward for confirmed leads</p>
+                                            </div>
+                                        </div>
+                                        <label className="relative inline-flex items-center cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.hasReward}
+                                                onChange={(e) => setFormData({ ...formData, hasReward: e.target.checked })}
+                                                className="sr-only peer"
+                                            />
+                                            <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+                                        </label>
+                                    </div>
+                                    {formData.hasReward && (
+                                        <div className="animate-fadeIn pt-2">
+                                            <input
+                                                value={formData.reward}
+                                                onChange={(e) => setFormData({ ...formData, reward: e.target.value })}
+                                                placeholder="Enter reward amount"
+                                                className="w-full bg-dark border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-secondary transition-all"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         )}
 
@@ -236,6 +271,10 @@ export default function EditReportPage() {
                                         <div className="flex flex-col gap-1">
                                             <span className="text-gray-500 uppercase text-[10px] font-bold">Identity Date</span>
                                             <span className="font-medium text-lg">{formData.date}</span>
+                                        </div>
+                                        <div className="flex flex-col gap-1">
+                                            <span className="text-gray-500 uppercase text-[10px] font-bold flex items-center gap-2">Reward {formData.hasReward && <ShieldCheck size={12} className="text-green-400" />}</span>
+                                            <span className="font-medium text-lg text-green-400">{formData.hasReward ? formData.reward : "None offered"}</span>
                                         </div>
                                     </div>
                                 </div>

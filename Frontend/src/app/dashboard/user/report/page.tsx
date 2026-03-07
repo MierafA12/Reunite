@@ -53,38 +53,16 @@ export default function ReportPage() {
         setFormData(prev => ({ ...prev, [name]: checked }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setShowVerification(true);
-    };
 
-    const handleVerifyCode = (code: string) => {
-        console.log("Verification code:", code);
-        setIsVerifying(true);
+        // Skip verification and show success
+        setIsSubmitted(true);
         setTimeout(() => {
-            setIsVerifying(false);
-            setShowVerification(false);
-            setIsSubmitted(true);
-            setTimeout(() => {
-                router.push("/dashboard/user");
-            }, 4000);
-        }, 2000);
+            router.push("/dashboard/user");
+        }, 4000);
     };
 
-    // Show verification page
-    if (showVerification) {
-        return (
-            <VerifyCodePage
-                onSubmit={handleVerifyCode}
-                onBack={() => setShowVerification(false)}
-                isLoading={isVerifying}
-                title="Verify Report Submission"
-                description="We've sent a 6-digit verification code to your registered email. Please enter it below to authorize this report."
-                backLinkText="Back to Report Form"
-                showResendButton={true}
-            />
-        );
-    }
 
     if (isSubmitted) {
         return (
@@ -414,7 +392,7 @@ export default function ReportPage() {
                                                 <span className="font-medium text-white">{formData.lastSeenDate || "Not specified"}</span>
                                             </div>
                                             <div className="flex justify-between border-b border-white/5 pb-2">
-                                                <span className="text-gray-500">Reward:</span>
+                                                <span className="text-gray-500 flex items-center gap-2">Reward: {formData.hasReward && <ShieldCheck size={14} className="text-green-400" />}</span>
                                                 <span className="font-medium text-green-400">{formData.hasReward ? formData.reward : "None offered"}</span>
                                             </div>
                                         </div>
