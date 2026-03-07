@@ -223,52 +223,19 @@ const PublicMissingPersonPage = async ({ params }: PageProps) => {
                             ownerId={ownerId}
                         />
 
-                        {/* PREMIUM REWARD CALLOUT */}
+                        {/* REWARD CALLOUT */}
                         {person.hasReward && (
-                            <div className="relative group overflow-hidden rounded-3xl transition-all duration-500 hover:scale-[1.02]">
-                                {/* Animated Background Glow */}
-                                <div className="absolute -inset-1 bg-gradient-to-r from-green-500/20 via-emerald-500/20 to-green-500/20 rounded-3xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-
-                                <div className="relative bg-[#0a0f0d] border border-green-500/20 rounded-3xl p-8 shadow-2xl overflow-hidden">
-                                    {/* Decorative Elements */}
-                                    <div className="absolute -top-10 -right-10 w-32 h-32 bg-green-500/10 rounded-full blur-3xl group-hover:bg-green-500/20 transition-all duration-700" />
-
-                                    <h2 className="text-[10px] font-black text-green-400 uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
-                                        <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
-                                        Verified Reward
-                                    </h2>
-
-                                    <div className="flex flex-col items-center text-center space-y-6">
-                                        <div className="relative">
-                                            <div className="w-24 h-24 bg-green-500/10 rounded-[2rem] flex items-center justify-center border border-green-500/20 rotate-6 group-hover:rotate-0 transition-transform duration-700">
-                                                <DollarSign className="w-12 h-12 text-green-400" />
-                                            </div>
-                                            <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-dark-light border border-green-500/30 rounded-full flex items-center justify-center shadow-xl">
-                                                <ShieldCheck className="w-6 h-6 text-green-400" />
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-1">
-                                            <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Available Bounty</p>
-                                            <p className="text-5xl font-black text-white tracking-tighter drop-shadow-[0_0_15px_rgba(34,197,94,0.3)]">
-                                                {person.reward}
-                                            </p>
-                                        </div>
-
-                                        <div className="w-full h-px bg-gradient-to-r from-transparent via-green-500/20 to-transparent" />
-
-                                        <p className="text-gray-400 text-sm leading-relaxed max-w-[240px] italic">
-                                            "For information leading to the safe return and reunion of {person.name}."
-                                        </p>
-
-                                        <div className="flex items-center gap-4 w-full">
-                                            <div className="flex-1 h-1.5 bg-green-500/10 rounded-full overflow-hidden">
-                                                <div className="bg-green-500 h-full w-full animate-pulse" />
-                                            </div>
-                                            <span className="text-[9px] font-bold text-green-400 uppercase tracking-tighter whitespace-nowrap">Confirmed Case</span>
-                                        </div>
-                                    </div>
+                            <div className="bg-green-500/10 border border-green-500/20 rounded-3xl p-8 text-center space-y-4">
+                                <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto">
+                                    <DollarSign className="w-8 h-8 text-green-400" />
                                 </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-white">Active Reward</h3>
+                                    <p className="text-green-400 text-2xl font-black mt-1">{person.reward}</p>
+                                </div>
+                                <p className="text-gray-400 text-sm italic">
+                                    For information leading to a successful reunion.
+                                </p>
                             </div>
                         )}
                     </div>

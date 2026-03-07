@@ -4,14 +4,16 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { User, Lock, X } from "lucide-react";
+import { User, Lock, X, Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Button from "@/app/components/ui/Button";
 import { useAuth } from "@/app/context/AuthContext";
+import { authApi } from "@/app/lib/api";
 
 interface LoginForm {
   email: string;
   password: string;
+  remember?: boolean;
 }
 
 export default function LoginPage() {
@@ -19,26 +21,51 @@ export default function LoginPage() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
   const { login } = useAuth();
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginForm>();
 
-  const onSubmit: SubmitHandler<LoginForm> = (data) => {
-    console.log("Login form submitted:", data);
-    // Simulate successful login
-    login({
-      id: "1",
-      name: "John Doe",
-      email: data.email
-    });
+  const onSubmit: SubmitHandler<LoginForm> = async (data) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      // Step 1: Get CSRF cookie
+      await authApi.getCsrfCookie();
 
-    // Redirect to callbackUrl if present, otherwise dashboard
-    if (callbackUrl) {
-      router.push(callbackUrl);
-    } else {
-      router.push("/dashboard/user");
+      // Step 2: Login
+      const response = await authApi.login(data);
+      console.log("Login successful:", response);
+
+      // Update local context
+      login(response.user);
+
+      // Redirect to callbackUrl if present, otherwise dashboard
+      if (callbackUrl) {
+        router.push(callbackUrl);
+      } else {
+        router.push("/dashboard/user");
+      }
+    } catch (err: any) {
+      console.error("Login failed:", err);
+      if (!err.response) {
+        setError("Network error: Could not connect to the server. Please ensure your backend is running.");
+      } else if (err.response?.status === 401) {
+        setError("Invalid email or password. Please try again.");
+      } else if (err.response?.data?.errors) {
+        const validationErrors = Object.values(err.response.data.errors).flat().join(" ");
+        setError(validationErrors);
+      } else if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError("Login failed. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -100,6 +127,12 @@ export default function LoginPage() {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {error && (
+              <div className="bg-danger/10 border-l-4 border-danger p-4 rounded-r-lg animate-fadeIn">
+                <p className="text-danger text-sm font-medium">{error}</p>
+              </div>
+            )}
+
             {/* Email */}
             <div className="group">
               <label className="block text-xs font-bold text-neutral-dark uppercase tracking-wider mb-2 transition-colors group-focus-within:text-primary font-sans">
@@ -112,6 +145,7 @@ export default function LoginPage() {
                   placeholder="name@example.com"
                   {...register("email", { required: "Email is required" })}
                   className="w-full pl-7 pr-4 py-3 bg-transparent border-b-2 border-neutral-light focus:border-primary outline-none transition-all text-neutral-dark placeholder:text-neutral/40"
+                  disabled={isLoading}
                 />
               </div>
               {errors.email && (
@@ -133,6 +167,7 @@ export default function LoginPage() {
                   placeholder="••••••••"
                   {...register("password", { required: "Password is required" })}
                   className="w-full pl-7 pr-4 py-3 bg-transparent border-b-2 border-neutral-light focus:border-primary outline-none transition-all text-neutral-dark placeholder:text-neutral/40"
+                  disabled={isLoading}
                 />
               </div>
               {errors.password && (
@@ -145,7 +180,11 @@ export default function LoginPage() {
             {/* Actions */}
             <div className="flex items-center justify-between py-2">
               <label className="flex items-center gap-2 cursor-pointer group">
-                <input type="checkbox" className="w-4 h-4 rounded border-neutral-light text-primary focus:ring-primary cursor-pointer" />
+                <input
+                  type="checkbox"
+                  {...register("remember")}
+                  className="w-4 h-4 rounded border-neutral-light text-primary focus:ring-primary cursor-pointer"
+                />
                 <span className="text-sm text-neutral group-hover:text-neutral-dark transition-colors font-medium">Remember me</span>
               </label>
               <Link
@@ -158,10 +197,17 @@ export default function LoginPage() {
 
             <Button
               type="submit"
-              onClick={handleSubmit(onSubmit)}
-              className="w-full py-3 rounded-xl"
+              className="w-full py-3 rounded-xl flex items-center justify-center gap-2"
+              disabled={isLoading}
             >
-              Sign In
+              {isLoading ? (
+                <>
+                  <Loader2 className="animate-spin" size={20} />
+                  <span>Signing In...</span>
+                </>
+              ) : (
+                "Sign In"
+              )}
             </Button>
 
             {/* Register Link */}
