@@ -79,4 +79,23 @@ export const profileApi = {
     },
 };
 
+export const reportApi = {
+    submitReport: async (formData: FormData) => {
+        const response = await api.post("/reports", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+        return response.data;
+    },
+    getUserReports: async () => {
+        const response = await api.get("/reports");
+        return response.data;
+    },
+    getReport: async (id: string) => {
+        const response = await api.get(`/reports/${id}`);
+        return response.data;
+    },
+};
+
 export default api;
