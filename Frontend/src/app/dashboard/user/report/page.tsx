@@ -474,7 +474,7 @@ export default function ReportPage() {
                                                 <span className="font-medium text-white">{formData.lastSeenDate || "Not specified"}</span>
                                             </div>
                                             <div className="flex justify-between border-b border-white/5 pb-2">
-                                                <span className="text-gray-500">Reward:</span>
+                                                <span className="text-gray-500 flex items-center gap-2">Reward: {formData.hasReward && <ShieldCheck size={14} className="text-green-400" />}</span>
                                                 <span className="font-medium text-green-400">{formData.hasReward ? formData.reward : "None offered"}</span>
                                             </div>
                                         </div>
