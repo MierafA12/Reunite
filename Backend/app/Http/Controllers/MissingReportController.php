@@ -150,6 +150,18 @@ class MissingReportController extends Controller
     }
 
     /**
+     * Show a public report.
+     */
+    public function publicShow($id)
+    {
+        // Publicly viewable reports (can also filter by 'approved' status here)
+        $report = MissingReport::with(['media', 'user:id,email'])
+            ->findOrFail($id);
+
+        return response()->json($report);
+    }
+
+    /**
      * Update the specified report.
      */
     public function update(Request $request, $id)
