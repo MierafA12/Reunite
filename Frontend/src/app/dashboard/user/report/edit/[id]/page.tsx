@@ -6,6 +6,8 @@ import { User, MapPin, Calendar, Camera, FileText, ArrowRight, ArrowLeft, CheckC
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
 import Button from "@/app/components/ui/Button";
+import { reportApi } from "@/app/lib/api";
+
 
 const steps = [
     { title: "Personal Details", icon: User },
