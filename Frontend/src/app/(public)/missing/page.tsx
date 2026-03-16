@@ -1,4 +1,7 @@
+"use client";
+
 import Header from "@/app/components/layout/Header";
+
 import Footer from "@/app/components/layout/footer";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,6 +12,7 @@ import { reportApi } from "@/app/lib/api";
 export default function MissingPage() {
     const [reports, setReports] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
         const fetchReports = async () => {
@@ -23,6 +27,12 @@ export default function MissingPage() {
         };
         fetchReports();
     }, []);
+
+    const filteredReports = reports.filter(person => {
+        const fullName = [person.first_name, person.middle_name, person.last_name].filter(Boolean).join(" ").toLowerCase();
+        return fullName.includes(searchTerm.toLowerCase()) || 
+               person.last_seen_location.toLowerCase().includes(searchTerm.toLowerCase());
+    });
     return (
         <div className="min-h-screen bg-dark text-white">
             <Header />
@@ -44,9 +54,12 @@ export default function MissingPage() {
                             <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-secondary" size={20} />
                             <input
                                 placeholder="Search name or location..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full bg-white/5 border border-white/10 rounded-2xl pl-14 pr-6 py-4 outline-none focus:border-secondary transition-all text-white placeholder:text-gray-500"
                             />
                         </div>
+
                         <button className="flex items-center justify-center gap-2 bg-white/5 border border-white/10 p-4 rounded-2xl hover:bg-secondary hover:text-dark hover:border-secondary transition-all group shadow-xl">
                             <Filter className="text-secondary group-hover:text-dark transition-colors" size={22} />
                             <span className="sm:hidden font-bold">Filters</span>
@@ -60,14 +73,16 @@ export default function MissingPage() {
                         <div className="animate-spin w-12 h-12 border-4 border-secondary border-t-transparent rounded-full mb-6"></div>
                         <p className="text-gray-500 font-medium">Scanning for reports...</p>
                     </div>
-                ) : reports.length > 0 ? (
+                ) : filteredReports.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                        {reports.map((person) => (
+                        {filteredReports.map((person) => (
+
                             <Link
                                 key={person.id}
-                                href={`/dashboard/user/report/${person.id}`}
+                                href={`/missing/${person.id}`}
                                 className="group bg-dark-light/30 border border-white/5 rounded-3xl overflow-hidden hover:border-secondary/50 transition-all hover:translate-y-[-4px]"
                             >
+
                                 <div className="relative h-64 w-full bg-dark">
                                     <img
                                         src={person.media?.[0]?.media_url || "/images/reunite.jpeg"}

@@ -45,8 +45,8 @@ export default function UserDashboard() {
             <main className="max-w-7xl mx-auto px-6 pt-32 pb-20">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
                     <div>
-                        <h1 className="text-4xl font-bold">Your <span className="text-secondary">Profile</span></h1>
-                        <p className="text-gray-400 mt-2">Welcome back. Manage your reported cases here.</p>
+                        <h1 className="text-4xl font-bold">Your <span className="text-secondary">Dashboard</span></h1>
+                        <p className="text-gray-400 mt-2">Welcome back. Everything you need to manage your submittions.</p>
                     </div>
                     <div className="flex items-center gap-4">
                         <Button href="/" variant="outline" className="px-6 py-3 rounded-xl font-bold border-white/10 text-white hover:bg-white/5 transition-all hidden sm:flex items-center gap-2">
@@ -59,13 +59,20 @@ export default function UserDashboard() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {/* Main Content: My Reports */}
+                    {/* Main Content: Overview */}
                     <div className="md:col-span-2 space-y-8">
                         <div>
-                            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                                <FileText className="text-secondary" />
-                                My Active Reports
-                            </h2>
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="text-2xl font-bold flex items-center gap-3">
+                                    <FileText className="text-secondary" />
+                                    Recent Active Reports
+                                </h2>
+                                {reports.length > 3 && (
+                                    <Link href="/dashboard/user/reports" className="text-secondary font-bold text-sm hover:underline">
+                                        View All ({reports.length}) →
+                                    </Link>
+                                )}
+                            </div>
 
                             <div className="space-y-4">
                                 {isLoading ? (
@@ -74,7 +81,7 @@ export default function UserDashboard() {
                                         <p className="text-gray-500">Loading your reports...</p>
                                     </div>
                                 ) : reports.length > 0 ? (
-                                    reports.map(report => (
+                                    reports.slice(0, 3).map(report => (
                                         <Link
                                             key={report.id}
                                             href={`/dashboard/user/report/manage/${report.id}`}
@@ -109,7 +116,7 @@ export default function UserDashboard() {
                                                         </span>
                                                         <span className="flex items-center gap-1.5">
                                                             <Calendar className="w-3.5 h-3.5" />
-                                                            Last Seen: {new Date(report.last_seen_date).toLocaleDateString()}
+                                                            {new Date(report.last_seen_date).toLocaleDateString()}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -129,8 +136,15 @@ export default function UserDashboard() {
                                         </Button>
                                     </div>
                                 )}
+                                
+                                {reports.length > 0 && (
+                                    <Button href="/dashboard/user/reports" variant="ghost" className="w-full text-secondary font-bold text-sm hover:bg-secondary/5 py-3 rounded-2xl border border-dashed border-secondary/20 block text-center">
+                                        View All My Reports →
+                                    </Button>
+                                )}
                             </div>
                         </div>
+
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4">
                             <DashboardCard

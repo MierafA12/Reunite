@@ -96,6 +96,10 @@ export const reportApi = {
         const response = await api.get("/public/reports");
         return response.data;
     },
+    getPublicReport: async (id: string) => {
+        const response = await api.get(`/public/reports/${id}`);
+        return response.data;
+    },
     getReport: async (id: string) => {
         const response = await api.get(`/reports/${id}`);
         return response.data;

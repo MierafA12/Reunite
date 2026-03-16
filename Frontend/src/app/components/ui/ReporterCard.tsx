@@ -11,8 +11,9 @@ interface ReporterCardProps {
     initials: string;
     role: string;
     message: string;
-    ownerId: string;
+    ownerId: string | number;
     isVerified?: boolean;
+
 }
 
 export default function ReporterCard({
@@ -24,7 +25,8 @@ export default function ReporterCard({
     isVerified = true
 }: ReporterCardProps): React.ReactNode {
     const { isLoggedIn, user } = useAuth();
-    const isOwner = isLoggedIn && user?.id === ownerId;
+    const isOwner = isLoggedIn && user?.id == ownerId;
+
 
     if (isOwner) {
         return (
