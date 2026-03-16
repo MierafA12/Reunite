@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import VerifyCodePage from "@/app/components/page/verify";
 import SubmissionSuccess from "@/app/components/page/SubmissionSuccess";
+import { reportApi } from "@/app/lib/api";
 
 
 const steps = [
@@ -25,12 +26,13 @@ export default function ReportPage() {
 
     // Form State
     const [formData, setFormData] = useState({
-        fullName: "",
-        nickname: "",
+        first_name: "",
+        middle_name: "",
+        last_name: "",
         age: "",
         gender: "",
         nationality: "",
-        relation: "",
+        relation_with_person: "",
         lastSeenLocation: "",
         lastSeenDate: "",
         physicalDescription: "",
@@ -39,6 +41,11 @@ export default function ReportPage() {
         hasReward: false,
         otherRelation: "",
     });
+
+    const [mediaFiles, setMediaFiles] = useState<File[]>([]);
+    const [previews, setPreviews] = useState<string[]>([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
     const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
@@ -53,14 +60,66 @@ export default function ReportPage() {
         setFormData(prev => ({ ...prev, [name]: checked }));
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(e.target.files || []);
+        setMediaFiles(prev => [...prev, ...files]);
+
+        // Create previews
+        const newPreviews = files.map(file => URL.createObjectURL(file));
+        setPreviews(prev => [...prev, ...newPreviews]);
+    };
+
+    const removeFile = (index: number) => {
+        setMediaFiles(prev => prev.filter((_, i) => i !== index));
+        setPreviews(prev => prev.filter((_, i) => i !== index));
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsSubmitting(true);
+        setError(null);
 
-        // Skip verification and show success
-        setIsSubmitted(true);
-        setTimeout(() => {
-            router.push("/dashboard/user");
-        }, 4000);
+        try {
+            const data = new FormData();
+            
+            // Map frontend fields to backend fields
+            data.append('first_name', formData.first_name);
+            data.append('middle_name', formData.middle_name);
+            data.append('last_name', formData.last_name);
+            data.append('age', formData.age);
+            data.append('gender', formData.gender.toLowerCase());
+            data.append('nationality', formData.nationality);
+            
+            const relation = formData.relation_with_person === "Other" 
+                ? formData.otherRelation 
+                : formData.relation_with_person;
+            data.append('relation_with_person', relation);
+            
+            data.append('last_seen_location', formData.lastSeenLocation);
+            data.append('last_seen_date', formData.lastSeenDate);
+            data.append('physical_description', formData.physicalDescription);
+            data.append('circumstances', formData.story);
+            data.append('offer_reward', formData.hasReward ? '1' : '0');
+            if (formData.hasReward && formData.reward) {
+                data.append('reward_amount', formData.reward.replace(/[^0-9.]/g, ''));
+            }
+
+            // Append media files
+            mediaFiles.forEach((file) => {
+                data.append('media[]', file);
+            });
+
+            await reportApi.submitReport(data);
+
+            setIsSubmitted(true);
+            setTimeout(() => {
+                router.push("/dashboard/user");
+            }, 4000);
+        } catch (err: any) {
+            console.error("Submission error:", err);
+            setError(err.response?.data?.message || "Failed to submit report. Please check all fields.");
+            setIsSubmitting(false);
+        }
     };
 
 
@@ -123,25 +182,37 @@ export default function ReportPage() {
                     <form onSubmit={handleSubmit} className="space-y-10">
                         {currentStep === 0 && (
                             <div className="animate-fadeIn space-y-8">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                                     <div className="space-y-3">
-                                        <label className="text-sm font-bold text-gray-400 uppercase tracking-widest">Full Name</label>
+                                        <label className="text-sm font-bold text-gray-400 uppercase tracking-widest">First Name</label>
                                         <input
-                                            name="fullName"
-                                            value={formData.fullName}
+                                            name="first_name"
+                                            value={formData.first_name}
                                             onChange={handleInputChange}
-                                            placeholder="Enter full legal name"
+                                            placeholder="First Name"
+                                            className="w-full bg-dark border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-secondary transition-all"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-3">
+                                        <label className="text-sm font-bold text-gray-400 uppercase tracking-widest">Middle Name</label>
+                                        <input
+                                            name="middle_name"
+                                            value={formData.middle_name}
+                                            onChange={handleInputChange}
+                                            placeholder="Middle Name"
                                             className="w-full bg-dark border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-secondary transition-all"
                                         />
                                     </div>
                                     <div className="space-y-3">
-                                        <label className="text-sm font-bold text-gray-400 uppercase tracking-widest">Nickname / Alias</label>
+                                        <label className="text-sm font-bold text-gray-400 uppercase tracking-widest">Last Name</label>
                                         <input
-                                            name="nickname"
-                                            value={formData.nickname}
+                                            name="last_name"
+                                            value={formData.last_name}
                                             onChange={handleInputChange}
-                                            placeholder="Any other names they go by"
+                                            placeholder="Last Name"
                                             className="w-full bg-dark border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-secondary transition-all"
+                                            required
                                         />
                                     </div>
                                 </div>
@@ -187,10 +258,11 @@ export default function ReportPage() {
                                     <div className="relative">
                                         <Heart className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
                                         <select
-                                            name="relation"
-                                            value={formData.relation}
+                                            name="relation_with_person"
+                                            value={formData.relation_with_person}
                                             onChange={handleInputChange}
                                             className="w-full bg-dark border border-white/10 rounded-2xl pl-12 pr-6 py-4 outline-none focus:border-secondary transition-all appearance-none cursor-pointer"
+                                            required
                                         >
                                             <option value="">Select Relation</option>
                                             <option value="Parent">Parent</option>
@@ -201,7 +273,7 @@ export default function ReportPage() {
                                             <option value="Other">Other</option>
                                         </select>
                                     </div>
-                                    {formData.relation === "Other" && (
+                                    {formData.relation_with_person === "Other" && (
                                         <div className="animate-fadeIn mt-4 pl-12">
                                             <input
                                                 name="otherRelation"
@@ -309,38 +381,46 @@ export default function ReportPage() {
                         {currentStep === 2 && (
                             <div className="animate-fadeIn space-y-8">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="border-2 border-dashed border-white/10 rounded-3xl p-10 flex flex-col items-center justify-center space-y-4 hover:border-secondary/50 hover:bg-secondary/5 transition-all cursor-pointer group">
+                                    <label className="border-2 border-dashed border-white/10 rounded-3xl p-10 flex flex-col items-center justify-center space-y-4 hover:border-secondary/50 hover:bg-secondary/5 transition-all cursor-pointer group relative">
+                                        <input 
+                                            type="file" 
+                                            multiple 
+                                            accept="image/*,video/*" 
+                                            onChange={handleFileChange}
+                                            className="absolute inset-0 opacity-0 cursor-pointer"
+                                        />
                                         <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center group-hover:bg-secondary/10 transition-colors">
                                             <Upload className="text-gray-500 group-hover:text-secondary transition-colors" />
                                         </div>
                                         <div className="text-center">
-                                            <p className="font-bold">Upload Principal Photo</p>
-                                            <p className="text-xs text-gray-500 mt-1">Clear front-facing photo preferred</p>
+                                            <p className="font-bold">Upload Media Files</p>
+                                            <p className="text-xs text-gray-500 mt-1">Photos and video clips</p>
                                         </div>
-                                    </div>
-                                    <div className="border-2 border-dashed border-white/10 rounded-3xl p-10 flex flex-col items-center justify-center space-y-4 hover:border-secondary/50 hover:bg-secondary/5 transition-all cursor-pointer group">
-                                        <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center group-hover:bg-secondary/10 transition-colors">
-                                            <Video className="text-gray-500 group-hover:text-secondary transition-colors" />
-                                        </div>
-                                        <div className="text-center">
-                                            <p className="font-bold">Upload Video Clip</p>
-                                            <p className="text-xs text-gray-500 mt-1">CCTV or recent footage</p>
-                                        </div>
+                                    </label>
+                                    <div className="bg-primary/5 border border-primary/10 rounded-2xl p-6 flex gap-4 items-center">
+                                        <ShieldCheck className="text-primary shrink-0" />
+                                        <p className="text-xs text-gray-400 leading-relaxed">
+                                            Uploading recent, high-quality photos and video clips significantly helps the AI matching system. Please ensure you have legal right to share these images.
+                                        </p>
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-4 gap-4">
-                                    {[1, 2, 3, 4].map((i) => (
-                                        <div key={i} className="aspect-square border border-white/5 bg-dark rounded-2xl flex items-center justify-center text-gray-700 hover:border-secondary/30 transition-all cursor-pointer">
-                                            <Camera size={20} />
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className="bg-primary/5 border border-primary/10 rounded-2xl p-6 flex gap-4">
-                                    <ShieldCheck className="text-primary shrink-0" />
-                                    <p className="text-xs text-gray-400 leading-relaxed">
-                                        Uploading recent, high-quality photos and video clips significantly helps the AI matching system and community members identify the person. Please ensure you have legal right to share these images.
-                                    </p>
-                                </div>
+                                
+                                {previews.length > 0 && (
+                                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 animate-fadeIn">
+                                        {previews.map((preview, index) => (
+                                            <div key={index} className="relative aspect-square rounded-2xl overflow-hidden group border border-white/10">
+                                                <img src={preview} alt="" className="w-full h-full object-cover" />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeFile(index)}
+                                                    className="absolute top-2 right-2 w-8 h-8 bg-black/50 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                                >
+                                                    ×
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -363,7 +443,9 @@ export default function ReportPage() {
                                             <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Personal Info</p>
                                             <div className="flex justify-between border-b border-white/5 pb-2">
                                                 <span className="text-gray-500">Name:</span>
-                                                <span className="font-medium text-white">{formData.fullName || "Not specified"}</span>
+                                                <span className="font-medium text-white">
+                                                    {[formData.first_name, formData.middle_name, formData.last_name].filter(Boolean).join(" ") || "Not specified"}
+                                                </span>
                                             </div>
                                             <div className="flex justify-between border-b border-white/5 pb-2">
                                                 <span className="text-gray-500">Age:</span>
@@ -376,7 +458,7 @@ export default function ReportPage() {
                                             <div className="flex justify-between border-b border-white/5 pb-2">
                                                 <span className="text-gray-500">Relation:</span>
                                                 <span className="font-medium text-secondary">
-                                                    {formData.relation === "Other" ? formData.otherRelation || "Other" : formData.relation || "Not specified"}
+                                                    {formData.relation_with_person === "Other" ? formData.otherRelation || "Other" : formData.relation_with_person || "Not specified"}
                                                 </span>
                                             </div>
                                         </div>
@@ -437,10 +519,11 @@ export default function ReportPage() {
                             {currentStep === steps.length - 1 ? (
                                 <button
                                     type="submit"
-                                    className="bg-secondary text-white px-12 py-4 rounded-2xl font-bold hover:shadow-[0_0_30px_rgba(79,70,229,0.4)] transition-all flex items-center gap-2"
+                                    disabled={isSubmitting}
+                                    className="bg-secondary text-white px-12 py-4 rounded-2xl font-bold hover:shadow-[0_0_30px_rgba(79,70,229,0.4)] transition-all flex items-center gap-2 disabled:opacity-50"
                                 >
-                                    Submit Report
-                                    <CheckCircle2 size={18} />
+                                    {isSubmitting ? "Submitting..." : "Submit Report"}
+                                    {!isSubmitting && <CheckCircle2 size={18} />}
                                 </button>
                             ) : (
                                 <button
@@ -453,6 +536,11 @@ export default function ReportPage() {
                                 </button>
                             )}
                         </div>
+                        {error && (
+                            <div className="mt-6 p-4 bg-danger/10 border border-danger/20 rounded-2xl text-danger text-center text-sm font-medium animate-fadeIn">
+                                {error}
+                            </div>
+                        )}
                     </form>
                 </div>
             </main>
