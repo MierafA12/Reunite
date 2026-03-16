@@ -6,21 +6,37 @@ import { User, FileText, Settings, Bell, MapPin, Calendar, MessageSquare, Shield
 import DashboardCard from "@/app/components/ui/DashboardCard";
 import { useAuth } from "@/app/context/AuthContext";
 import Button from "@/app/components/ui/Button";
+import { reportApi } from "@/app/lib/api";
+import { useEffect, useState } from "react";
 
 export default function UserDashboard() {
     const { user } = useAuth();
+    const [reports, setReports] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    // Simulated user reports
-    const userReports = [
-        {
-            id: "1",
-            name: "Abebe Kebede",
-            status: "Missing",
-            date: "12 Jan 2026",
-            location: "Addis Ababa",
-            image: "/images/reunite.jpeg"
-        }
-    ];
+    useEffect(() => {
+        const fetchReports = async () => {
+            try {
+                const result = await reportApi.getUserReports();
+                console.log("Fetched reports:", result);
+                
+                // Laravel pagination stores the array in a 'data' property
+                if (result && Array.isArray(result.data)) {
+                    setReports(result.data);
+                } else if (Array.isArray(result)) {
+                    setReports(result);
+                } else {
+                    setReports([]);
+                }
+            } catch (error) {
+                console.error("Failed to fetch reports:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchReports();
+    }, []);
 
     return (
         <div className="min-h-screen bg-dark text-white">
@@ -52,40 +68,67 @@ export default function UserDashboard() {
                             </h2>
 
                             <div className="space-y-4">
-                                {userReports.map(report => (
-                                    <Link
-                                        key={report.id}
-                                        href={`/missing/${report.id}`}
-                                        className="block bg-dark-light/50 border border-white/5 rounded-3xl p-6 hover:border-secondary/30 transition-all group"
-                                    >
-                                        <div className="flex flex-wrap items-center gap-6">
-                                            <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 border border-white/10">
-                                                <img src={report.image} alt={report.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                                            </div>
-                                            <div className="flex-grow">
-                                                <div className="flex items-center justify-between mb-2">
-                                                    <h3 className="text-xl font-bold">{report.name}</h3>
-                                                    <span className="bg-danger/20 text-danger border border-danger/30 px-3 py-1 rounded-full text-[10px] font-bold uppercase">
-                                                        {report.status}
-                                                    </span>
+                                {isLoading ? (
+                                    <div className="text-center py-20 bg-dark-light/30 rounded-3xl border border-white/5">
+                                        <div className="animate-spin w-8 h-8 border-4 border-secondary border-t-transparent rounded-full mx-auto mb-4"></div>
+                                        <p className="text-gray-500">Loading your reports...</p>
+                                    </div>
+                                ) : reports.length > 0 ? (
+                                    reports.map(report => (
+                                        <Link
+                                            key={report.id}
+                                            href={`/dashboard/user/report/manage/${report.id}`}
+                                            className="block bg-dark-light/50 border border-white/5 rounded-3xl p-6 hover:border-secondary/30 transition-all group"
+                                        >
+                                            <div className="flex flex-wrap items-center gap-6">
+                                                <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 border border-white/10">
+                                                    <img 
+                                                        src={report.media?.[0]?.media_url || "/images/reunite.jpeg"} 
+                                                        alt={`${report.first_name} ${report.last_name}`} 
+                                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                                                    />
                                                 </div>
-                                                <div className="flex flex-wrap gap-4 text-sm text-gray-400">
-                                                    <span className="flex items-center gap-1.5 underline decoration-secondary">
-                                                        <MapPin className="w-3.5 h-3.5" />
-                                                        {report.location}
-                                                    </span>
-                                                    <span className="flex items-center gap-1.5">
-                                                        <Calendar className="w-3.5 h-3.5" />
-                                                        Reported: {report.date}
-                                                    </span>
+                                                <div className="flex-grow">
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <h3 className="text-xl font-bold">
+                                                            {[report.first_name, report.middle_name, report.last_name].filter(Boolean).join(" ")}
+                                                        </h3>
+                                                        <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${
+                                                            report.status === 'pending' ? 'bg-warning/20 text-warning border border-warning/30' : 
+                                                            report.status === 'approved' ? 'bg-success/20 text-success border border-success/30' :
+                                                            report.status === 'found' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                                                            'bg-danger/20 text-danger border border-danger/30'
+                                                        }`}>
+                                                            {report.status}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex flex-wrap gap-4 text-sm text-gray-400">
+                                                        <span className="flex items-center gap-1.5 underline decoration-secondary">
+                                                            <MapPin className="w-3.5 h-3.5" />
+                                                            {report.last_seen_location}
+                                                        </span>
+                                                        <span className="flex items-center gap-1.5">
+                                                            <Calendar className="w-3.5 h-3.5" />
+                                                            Last Seen: {new Date(report.last_seen_date).toLocaleDateString()}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="text-secondary font-bold text-sm group-hover:translate-x-2 transition-transform">
+                                                    Manage →
                                                 </div>
                                             </div>
-                                            <div className="text-secondary font-bold text-sm group-hover:translate-x-2 transition-transform">
-                                                Manage →
-                                            </div>
-                                        </div>
-                                    </Link>
-                                ))}
+                                        </Link>
+                                    ))
+                                ) : (
+                                    <div className="text-center py-20 bg-dark-light/30 rounded-3xl border border-white/5">
+                                        <FileText className="w-12 h-12 text-gray-700 mx-auto mb-4" />
+                                        <h3 className="text-xl font-bold mb-2">No Reports Yet</h3>
+                                        <p className="text-gray-500 max-w-xs mx-auto mb-8">You haven't submitted any missing person reports yet. Your active reports will appear here.</p>
+                                        <Button href="/dashboard/user/report" variant="secondary" className="px-8 py-3 rounded-xl font-bold">
+                                            Submit First Report
+                                        </Button>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -149,7 +192,7 @@ export default function UserDashboard() {
                                 </div>
                                 <div className="flex justify-between items-center text-sm">
                                     <span className="text-gray-400">Cases Managed</span>
-                                    <span className="text-white font-bold">{userReports.length}</span>
+                                    <span className="text-white font-bold">{reports.length}</span>
                                 </div>
                             </div>
                             <Button
