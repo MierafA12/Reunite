@@ -136,4 +136,61 @@ class MissingReportController extends Controller
 
         return response()->json($report);
     }
+    /**
+     * Get all public reports.
+     */
+    public function publicIndex()
+    {
+        // For now return all, but usually we would filter by 'approved' status
+        $reports = MissingReport::with('media')
+            ->latest()
+            ->paginate(20);
+
+        return response()->json($reports);
+    }
+
+    /**
+     * Update the specified report.
+     */
+    public function update(Request $request, $id)
+    {
+        $report = MissingReport::where('user_id', Auth::id())->findOrFail($id);
+
+        $validated = $request->validate([
+            'first_name' => 'sometimes|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'last_name' => 'sometimes|string|max:255',
+            'age' => 'nullable|integer|min:0',
+            'gender' => 'sometimes|in:male,female,other',
+            'nationality' => 'nullable|string|max:255',
+            'relation_with_person' => 'sometimes|string|max:255',
+            'last_seen_location' => 'sometimes|string|max:255',
+            'last_seen_date' => 'sometimes|date',
+            'physical_description' => 'sometimes|string',
+            'circumstances' => 'sometimes|string',
+            'offer_reward' => 'sometimes|boolean',
+            'reward_amount' => 'nullable|numeric|min:0',
+            'status' => 'sometimes|in:pending,approved,rejected,found',
+        ]);
+
+        $report->update($validated);
+
+        return response()->json([
+            'message' => 'Report updated successfully.',
+            'report' => $report->load('media'),
+        ]);
+    }
+
+    /**
+     * Remove the specified report.
+     */
+    public function destroy($id)
+    {
+        $report = MissingReport::where('user_id', Auth::id())->findOrFail($id);
+        $report->delete();
+
+        return response()->json([
+            'message' => 'Report deleted successfully.',
+        ]);
+    }
 }
