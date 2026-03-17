@@ -95,7 +95,8 @@ export default function MissingPage() {
                                             person.status === 'approved' ? 'bg-success' :
                                             'bg-danger'
                                         }`}>
-                                            {person.status}
+                                            {person.status.charAt(0).toUpperCase() + person.status.slice(1)}
+
                                         </span>
                                     </div>
                                     {person.offer_reward && (
