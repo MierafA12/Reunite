@@ -2,16 +2,12 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProfileController;
+
 
 require __DIR__.'/api/auth.php';
+require __DIR__.'/api/report.php';
+require __DIR__.'/api/profile.php';
 
-Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get('/user', function (Request $request) {
-        return $request->user()->load('profile');
-    });
 
-    // Profile Actions
-    Route::get('/profile', [ProfileController::class, 'show']);
-    Route::post('/profile/update', [ProfileController::class, 'update']);
-});
+
+  

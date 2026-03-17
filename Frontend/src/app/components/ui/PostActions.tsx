@@ -7,15 +7,16 @@ import Button from "./Button";
 import Link from "next/link";
 
 interface PostActionsProps {
-    ownerId: string;
+    ownerId: string | number;
     postId: string;
 }
 
 export default function PostActions({ ownerId, postId }: PostActionsProps): React.ReactNode {
     const { user, isLoggedIn } = useAuth();
 
-    // Simulate ownership for demonstration if ownerId is "1" and user.id is "1"
-    const isOwner = isLoggedIn && user?.id === ownerId;
+    // Support both string and number IDs
+    const isOwner = isLoggedIn && user?.id == ownerId;
+
 
     if (!isOwner) return null;
 
