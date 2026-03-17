@@ -56,29 +56,34 @@ const PublicMissingPersonPage = () => {
         );
     }
 
-    // Use reported data
+    // Get reporter name
+    const reporterName = report.user ? 
+        (`${report.user.first_name || ""} ${report.user.last_name || ""}`).trim() : 
+        "Verified Reporter";
+
+
     const person = {
-        name: report.first_name,
-        surname: report.last_name,
-        fullName: [report.first_name, report.middle_name, report.last_name].filter(Boolean).join(" "),
+        name: report.first_name || "Unknown",
+        surname: report.last_name || "",
+        fullName: [report.first_name, report.middle_name, report.last_name].filter(Boolean).join(" ") || "Unknown Person",
         id: report.id,
-        location: report.last_seen_location,
-        date: new Date(report.last_seen_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
-        age: `${report.age} Years`,
-        gender: report.gender,
+        location: report.last_seen_location || "Location not specified",
+        date: report.last_seen_date ? new Date(report.last_seen_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : "Date unknown",
+        age: report.age ? `${report.age} Years` : "Age Unknown",
+        gender: report.gender || "Not specified",
         nationality: report.nationality || "Not specified",
-        story: report.circumstances,
+        story: report.circumstances || "No details provided for the disappearance.",
         reward: report.offer_reward ? `${report.reward_amount}` : null,
-        status: report.status,
-        physical: report.physical_description,
+        status: (report.status || "pending").toLowerCase(),
+        physical: report.physical_description || "No physical description provided.",
         media: report.media || []
     };
 
     const reporter = {
-        name: "Case Contact",
-        initials: "CC",
+        name: reporterName,
+        initials: report.user?.first_name ? (report.user.first_name[0] + (report.user.last_name ? report.user.last_name[0] : "")) : "R",
         role: "Primary contact",
-        relation: report.relation_with_person,
+        relation: report.relation_with_person || "Reporter",
         message: "If you have any information, please reach out immediately."
     };
 
@@ -87,73 +92,83 @@ const PublicMissingPersonPage = () => {
             <Header />
 
             {/* HERO SECTION */}
-            <section className="relative h-[70vh] w-full overflow-hidden">
+            <section className="relative min-h-[85vh] w-full flex flex-col justify-end overflow-hidden pb-40">
                 <img
                     src={person.media?.[0]?.media_url || "/images/reunite.jpeg"}
                     alt={person.fullName}
-                    className="w-full h-full object-cover"
+                    className="absolute inset-0 w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/40 to-transparent" />
+                {/* Enhanced Gradient Overlays */}
+                <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/30 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-b from-dark/60 via-transparent to-transparent" />
 
-                <div className="relative z-10 max-w-7xl mx-auto px-6 h-full flex flex-col justify-end pb-16">
-                    <div className="animate-fadeInUp">
-                        <div className="flex items-center justify-between mb-4 flex-wrap gap-4">
-                            <div className="flex items-center gap-3">
-                                <span className={`border px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2 ${
-                                    person.status === 'found' ? 'bg-success/20 text-success border-success/30' : 'bg-danger/20 text-danger border-danger/30'
-                                }`}>
-                                    <span className={`w-2 h-2 rounded-full ${person.status === 'found' ? 'bg-success' : 'bg-danger animate-ping'}`} />
-                                    Status: {person.status}
-                                </span>
-                                {person.reward && (
-                                    <span className="bg-green-500/20 text-green-400 border border-green-500/30 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2">
-                                        <DollarSign size={14} />
-                                        Reward: {person.reward}
+                <div className="relative z-10 max-w-7xl mx-auto px-6 w-full mb-12">
+                    <div className="animate-fadeInUp flex flex-col md:flex-row md:items-end md:justify-between gap-10">
+                        
+                        {/* LEFT: Identity */}
+                        <div className="flex-1 space-y-6">
+                            <div className="space-y-3">
+                                <div className="flex items-center gap-3">
+                                    <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl border ${
+                                        person.status === 'found' 
+                                            ? 'bg-success/20 text-success border-success/30' 
+                                            : 'bg-danger/20 text-danger border-danger/30 animate-pulse'
+                                    }`}>
+                                        {person.status === 'found' ? 'RESOLVED' : 'MISSING / URGENT'}
                                     </span>
-                                )}
-                                <span className="bg-white/10 backdrop-blur-md text-white/80 border border-white/10 px-4 py-1.5 rounded-full text-xs font-medium">
-                                    Case #{person.id.toString().slice(0, 8)}
-                                </span>
+                                    <span className="text-white/30 text-[10px] font-black tracking-[0.2em] uppercase">
+                                        REF #{person.id?.toString().slice(0, 8).toUpperCase()}
+                                    </span>
+                                </div>
+                                <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-none text-white drop-shadow-2xl">
+                                    {person.name} <span className="text-secondary">{person.surname}</span>
+                                </h1>
                             </div>
+                            
+                            <div className="flex flex-wrap items-center gap-4 text-white/60 font-bold uppercase tracking-widest text-[10px]">
+                                <div className="flex items-center gap-2.5 bg-white/5 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/5">
+                                    <MapPin className="w-3.5 h-3.5 text-secondary" />
+                                    <span>Last seen: <span className="text-white">{person.location}</span></span>
+                                </div>
+                                <div className="flex items-center gap-2.5 bg-white/5 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/5">
+                                    <Calendar className="w-3.5 h-3.5 text-secondary" />
+                                    <span>Added <span className="text-white">{person.date}</span></span>
+                                </div>
+                            </div>
+                        </div>
 
-                            <div className="flex items-center gap-4">
+                        {/* RIGHT: Actions */}
+                        <div className="flex flex-col items-start md:items-end gap-6">
+                            <div className="flex flex-wrap items-center gap-3">
                                 <PostActions ownerId={report.user_id} postId={person.id} />
-                                <FlagButton ownerId={report.user_id} />
+                                <FlagButton ownerId={report.user_id} personName={person.fullName} />
                             </div>
+                            
+                            <button 
+                                onClick={() => router.back()} 
+                                className="flex items-center gap-2 text-white/30 hover:text-white transition-all group font-black text-[10px] uppercase tracking-[0.2em] hover:tracking-[0.3em]"
+                            >
+                                <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
+                                RETURN TO SEARCH
+                            </button>
                         </div>
 
-                        <Link href="/missing" className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4 group text-sm">
-                            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                            Back to List
-                        </Link>
-
-                        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight">
-                            {person.name} <span className="text-secondary">{person.surname}</span>
-                        </h1>
-
-                        <div className="flex flex-wrap items-center gap-6 mt-6 text-gray-300">
-                            <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/10">
-                                <MapPin className="w-4 h-4 text-secondary" />
-                                <span className="text-sm font-medium">{person.location}</span>
-                            </div>
-                            <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/10">
-                                <Calendar className="w-4 h-4 text-secondary" />
-                                <span className="text-sm font-medium">Last seen: {person.date}</span>
-                            </div>
-                        </div>
                     </div>
                 </div>
+
             </section>
 
             {/* QUICK INFO GRID */}
-            <section className="max-w-7xl mx-auto px-6 -mt-10 relative z-20">
+            <section className="max-w-7xl mx-auto px-6 -mt-16 relative z-20">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                     <InfoCard label="Age" value={person.age} icon={User} />
                     <InfoCard label="Gender" value={person.gender} icon={ShieldCheck} />
                     <InfoCard label="Nationality" value={person.nationality} icon={Flag} />
-                    <InfoCard label="Status" value={person.status} icon={Calendar} />
+                    <InfoCard label="Current Status" value={person.status ? (person.status.charAt(0).toUpperCase() + person.status.slice(1)) : "Unknown"} icon={Calendar} />
                 </div>
             </section>
+
+
 
             {/* CONTENT GRID */}
             <main className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-12">
@@ -167,9 +182,10 @@ const PublicMissingPersonPage = () => {
                         </div>
                         <div className="bg-dark-light/20 border border-white/5 rounded-3xl p-8 leading-relaxed text-gray-300 relative overflow-hidden">
                             <Quote className="absolute -top-4 -right-4 w-32 h-32 text-white/5 rotate-12" />
-                            <p className="text-xl italic leading-relaxed">
-                                "{person.story}"
+                            <p className="text-lg italic leading-relaxed">
+                                {person.story}
                             </p>
+
                         </div>
                     </div>
 
@@ -198,11 +214,10 @@ const PublicMissingPersonPage = () => {
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                                 {person.media.map((med: any, idx: number) => (
-                                    <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border border-white/10 group">
-                                        <img src={med.media_url} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                                    </div>
+                                    <ImageBox key={idx} src={med.media_url} />
                                 ))}
                             </div>
+
                         </div>
                     )}
 

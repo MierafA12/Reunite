@@ -21,15 +21,15 @@ export const InfoCard = ({
 
 export const ImageBox = ({ src }: { src?: string }) => (
     <div className="relative h-48 rounded-2xl overflow-hidden border border-white/5 group bg-dark-light">
-        <Image
+        <img
             src={src || "/images/sample.jpg"}
             alt="Missing"
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-110"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-dark/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
     </div>
 );
+
 
 export const VideoBox = () => (
     <div className="relative h-48 bg-dark-light border border-white/5 rounded-2xl flex flex-col items-center justify-center group cursor-pointer overflow-hidden">
