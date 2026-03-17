@@ -92,8 +92,24 @@ export const reportApi = {
         const response = await api.get("/reports");
         return response.data;
     },
+    getPublicReports: async () => {
+        const response = await api.get("/public/reports");
+        return response.data;
+    },
+    getPublicReport: async (id: string) => {
+        const response = await api.get(`/public/reports/${id}`);
+        return response.data;
+    },
     getReport: async (id: string) => {
         const response = await api.get(`/reports/${id}`);
+        return response.data;
+    },
+    updateReport: async (id: string, data: any) => {
+        const response = await api.put(`/reports/${id}`, data);
+        return response.data;
+    },
+    deleteReport: async (id: string) => {
+        const response = await api.delete(`/reports/${id}`);
         return response.data;
     },
 };

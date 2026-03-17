@@ -8,7 +8,8 @@ import Modal from "./Modal";
 import Button from "./Button";
 import Link from "next/link";
 
-export default function FlagButton({ ownerId }: { ownerId?: string }): React.ReactNode {
+export default function FlagButton({ ownerId, personName }: { ownerId?: string | number; personName?: string }): React.ReactNode {
+
     const { isLoggedIn, user } = useAuth();
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -73,8 +74,9 @@ export default function FlagButton({ ownerId }: { ownerId?: string }): React.Rea
                 className="flex items-center gap-2 text-gray-400 hover:text-danger border border-white/10 px-4 py-2 rounded-xl transition-all text-sm font-medium"
             >
                 <Flag className="w-4 h-4" />
-                <span>Flag Fake Report</span>
+                <span>Flag {personName || "Case"}</span>
             </Link>
+
         );
     }
 
@@ -83,14 +85,20 @@ export default function FlagButton({ ownerId }: { ownerId?: string }): React.Rea
             <button
                 onClick={handleFlagClick}
                 disabled={isFlagged}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all text-sm font-medium border ${isFlagged
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl transition-all text-sm font-bold border-2 ${isFlagged
                     ? "bg-danger/20 text-danger border-danger/30"
-                    : "text-gray-400 hover:text-danger border-white/10 hover:border-danger/30"
+                    : "bg-danger/10 text-danger border-danger/50 hover:bg-danger hover:text-white hover:border-danger shadow-lg shadow-danger/20"
                     }`}
             >
+
                 {isFlagged ? <AlertTriangle className="w-4 h-4" /> : <Flag className="w-4 h-4" />}
-                <span>{isFlagged ? "Flagged" : "Flag Fake News"}</span>
+                <span>{isFlagged ? "Reported" : (personName ? `Flag ${personName} as Fake` : "Flag Fake News")}</span>
             </button>
+
+
+
+
+
 
             <Modal
                 isOpen={isModalOpen}
@@ -114,7 +122,7 @@ export default function FlagButton({ ownerId }: { ownerId?: string }): React.Rea
                             value={reason}
                             onChange={(e) => setReason(e.target.value)}
                             placeholder="e.g., This person was found last week, or this photo is from a different country..."
-                            className="w-full h-40 bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-secondary/50 focus:ring-1 focus:ring-secondary/50 transition-all resize-none text-sm"
+                            className="w-full h-40 bg-dark-light/50 border border-white/10 rounded-2xl p-5 text-white placeholder:text-gray-600 focus:outline-none focus:border-danger/50 focus:ring-1 focus:ring-danger/20 transition-all resize-none text-sm"
                         />
                     </div>
 
@@ -122,16 +130,17 @@ export default function FlagButton({ ownerId }: { ownerId?: string }): React.Rea
                         <button
                             type="button"
                             onClick={() => setIsModalOpen(false)}
-                            className="flex-1 px-6 py-3 rounded-xl bg-white/5 text-white hover:bg-white/10 transition-all text-sm font-bold border border-white/5"
+                            className="flex-1 px-6 py-3.5 rounded-2xl bg-white/5 text-white/60 hover:text-white hover:bg-white/10 transition-all text-sm font-black uppercase tracking-widest border border-white/5"
                         >
                             Cancel
                         </button>
                         <Button
                             type="submit"
-                            variant="secondary"
+                            variant="danger"
                             disabled={isSubmitting || !reason.trim()}
-                            className="flex-[2] py-3 rounded-xl flex items-center justify-center gap-2"
+                            className="flex-[2] py-3.5 rounded-2xl flex items-center justify-center gap-2 font-black uppercase tracking-widest shadow-lg shadow-danger/20"
                         >
+
                             {isSubmitting ? (
                                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                             ) : (
