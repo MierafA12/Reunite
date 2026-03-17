@@ -141,8 +141,11 @@ class MissingReportController extends Controller
      */
     public function publicIndex()
     {
-        // For now return all, but usually we would filter by 'approved' status
+        // Only return reports that are approved or found as requested
         $reports = MissingReport::with('media')
+            ->whereIn('status', ['approved', 'found'])
+
+
             ->latest()
             ->paginate(20);
 
@@ -154,12 +157,14 @@ class MissingReportController extends Controller
      */
     public function publicShow($id)
     {
-        // Publicly viewable reports (can also filter by 'approved' status here)
-        $report = MissingReport::with(['media', 'user:id,email'])
+        // Publicly viewable reports must be approved or found
+        $report = MissingReport::with(['media', 'user:id,first_name,last_name,email'])
+            ->whereIn('status', ['approved', 'found'])
             ->findOrFail($id);
 
         return response()->json($report);
     }
+
 
     /**
      * Update the specified report.
