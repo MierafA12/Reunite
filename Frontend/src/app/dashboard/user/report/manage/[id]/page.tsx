@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Header from "@/app/components/layout/Header";
-import { User, MapPin, Calendar, FileText, ArrowLeft, Edit, Trash2, CheckCircle, Clock, ShieldCheck, AlertCircle } from "lucide-react";
+import { User, MapPin, Calendar, ArrowLeft, Edit, Trash2, CheckCircle2, Clock, ShieldCheck, AlertCircle, CheckCircle } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import Button from "@/app/components/ui/Button";
 import { reportApi } from "@/app/lib/api";
@@ -33,19 +33,9 @@ export default function ManageReportPage() {
         if (id) fetchReport();
     }, [id]);
 
-    const handleMarkAsFound = async () => {
-        if (!confirm("Are you sure this person has been found? This will update the report status publically.")) return;
-        
-        setIsUpdatingStatus(true);
-        try {
-            await reportApi.updateReport(id as string, { status: 'found' });
-            setReport({ ...report, status: 'found' });
-        } catch (err: any) {
-            console.error("Failed to update status:", err);
-            alert("Failed to update status. Please try again.");
-        } finally {
-            setIsUpdatingStatus(false);
-        }
+    const handleMarkAsFound = () => {
+        // Navigate to evidence submission form (admin must confirm)
+        router.push(`/dashboard/user/reports/${id}/mark-found`);
     };
 
     const handleDelete = async () => {
@@ -96,14 +86,13 @@ export default function ManageReportPage() {
                     </div>
 
                     <div className="flex flex-wrap gap-3">
-                        {report.status !== 'found' && (
+                        {report.status === 'approved' && (
                             <button
                                 onClick={handleMarkAsFound}
-                                disabled={isUpdatingStatus}
-                                className="px-6 py-3 bg-success/20 text-success border border-success/30 rounded-xl font-bold hover:bg-success/30 transition-all flex items-center gap-2 disabled:opacity-50"
+                                className="px-6 py-3 bg-green-500/20 text-green-400 border border-green-500/30 rounded-xl font-bold hover:bg-green-500 hover:text-white transition-all flex items-center gap-2 shadow-[0_0_20px_rgba(34,197,94,0.15)]"
                             >
-                                <CheckCircle size={18} />
-                                {isUpdatingStatus ? "Updating..." : "Mark as Found"}
+                                <CheckCircle2 size={18} />
+                                Mark as Found
                             </button>
                         )}
                         <Button
