@@ -114,4 +114,35 @@ export const reportApi = {
     },
 };
 
+export const foundReportApi = {
+    // Reporter: submit found evidence for a specific missing report
+    submitFoundReport: async (missingReportId: string, formData: FormData) => {
+        const response = await api.post(`/reports/${missingReportId}/found`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+        });
+        return response.data;
+    },
+    // Reporter: see their own found report submissions
+    getMySubmissions: async () => {
+        const response = await api.get("/my-found-submissions");
+        return response.data;
+    },
+    // Admin: list found report submissions (filter by status)
+    adminGetAll: async (status: string = "pending") => {
+        const response = await api.get(`/admin/found-reports?status=${status}`);
+        return response.data;
+    },
+    // Admin: show single submission detail
+    adminGetOne: async (id: string) => {
+        const response = await api.get(`/admin/found-reports/${id}`);
+        return response.data;
+    },
+    // Admin: confirm or reject a found report
+    adminReview: async (id: string, data: { action: "confirm" | "reject"; admin_note?: string }) => {
+        const response = await api.post(`/admin/found-reports/${id}/review`, data);
+        return response.data;
+    },
+};
+
 export default api;
+
