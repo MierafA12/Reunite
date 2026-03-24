@@ -37,7 +37,7 @@ return new class extends Migration
     $table->boolean('offer_reward')->default(false);
     $table->decimal('reward_amount', 10, 2)->nullable();
 
-    $table->enum('status', ['pending', 'approved', 'rejected'])
+    $table->enum('status', ['pending', 'approved', 'rejected', 'found'])
           ->default('pending')
           ->index();
 
