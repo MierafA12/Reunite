@@ -7,8 +7,9 @@ import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import Modal from "./Modal";
 import Button from "./Button";
 import Link from "next/link";
+import { reportApi } from "@/app/lib/api";
 
-export default function FlagButton({ ownerId, personName }: { ownerId?: string | number; personName?: string }): React.ReactNode {
+export default function FlagButton({ ownerId, personName, postId }: { ownerId?: string | number; personName?: string, postId?: string }): React.ReactNode {
 
     const { isLoggedIn, user } = useAuth();
     const pathname = usePathname();
@@ -52,17 +53,20 @@ export default function FlagButton({ ownerId, personName }: { ownerId?: string |
 
     const handleSubmitFlag = async (e: React.FormEvent): Promise<void> => {
         e.preventDefault();
-        if (!reason.trim()) return;
+        if (!reason.trim() || !postId) return;
 
         setIsSubmitting(true);
-        // Simulate API request delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        console.log("Flagged with reason:", reason);
-        setIsFlagged(true);
-        setIsModalOpen(false);
-        setIsSubmitting(false);
-        alert("This report has been flagged for review. Thank you for keeping our community safe.");
+        try {
+            await reportApi.flagReport(postId, { reason });
+            setIsFlagged(true);
+            setIsModalOpen(false);
+            alert("This report has been flagged for review. Thank you for keeping our community safe.");
+        } catch (error) {
+            console.error("Failed to flag report:", error);
+            alert("Failed to submit flag. Please try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     if (!isLoggedIn) {
