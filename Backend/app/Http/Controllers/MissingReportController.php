@@ -210,4 +210,33 @@ class MissingReportController extends Controller
             'message' => 'Report deleted successfully.',
         ]);
     }
+
+    /**
+     * Flag a report (e.g., report as fake).
+     */
+    public function flag($id)
+    {
+        $report = MissingReport::findOrFail($id);
+        
+        $report->increment('flags_count');
+        $report->update(['is_flagged' => true]);
+
+        return response()->json([
+            'message' => 'Report has been flagged. Thank you for your feedback.',
+            'flags_count' => $report->flags_count,
+        ]);
+    }
+
+    /**
+     * ADMIN: Get all reports that have been flagged.
+     */
+    public function adminFlaggedIndex()
+    {
+        $reports = MissingReport::where('is_flagged', true)
+            ->with(['user:id,first_name,last_name,email'])
+            ->orderBy('flags_count', 'desc')
+            ->paginate(20);
+
+        return response()->json($reports);
+    }
 }
