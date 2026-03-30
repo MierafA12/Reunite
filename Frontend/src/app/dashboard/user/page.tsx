@@ -189,6 +189,7 @@ export default function UserDashboard() {
                             <div className="absolute top-0 right-0 p-4 opacity-5">
                                 <ShieldCheck size={80} className="text-secondary" />
                             </div>
+                            
                             <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
                                 <User className="w-5 h-5 text-secondary" />
                                 Account Details

@@ -2,12 +2,73 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Header from "@/app/components/layout/Header";
-import { User, Mail, Phone, MapPin, Briefcase, Camera, Save, ArrowLeft, ShieldCheck, CheckCircle2 } from "lucide-react";
+import { User, Mail, Phone, MapPin, Briefcase, Camera, Save, ArrowLeft, ShieldCheck, CheckCircle2, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAuth } from "@/app/context/AuthContext";
 import Button from "@/app/components/ui/Button";
 import { profileApi, authApi } from "@/app/lib/api";
+
+const CameraModal = ({ onCapture, onClose }: { onCapture: (image: string) => void, onClose: () => void }) => {
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [stream, setStream] = useState<MediaStream | null>(null);
+
+    useEffect(() => {
+        const startCamera = async () => {
+            try {
+                const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+                setStream(s);
+                if (videoRef.current) {
+                    videoRef.current.srcObject = s;
+                }
+            } catch (err) {
+                console.error("Camera error:", err);
+            }
+        };
+        startCamera();
+        return () => {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+        };
+    }, []);
+
+    const capture = () => {
+        if (videoRef.current && canvasRef.current) {
+            const video = videoRef.current;
+            const canvas = canvasRef.current;
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const image = canvas.toDataURL('image/jpeg');
+                onCapture(image);
+                onClose();
+            }
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+            <div className="bg-dark-light border border-white/10 rounded-3xl overflow-hidden max-w-lg w-full animate-fadeIn">
+                <div className="p-6 border-b border-white/5 flex justify-between items-center">
+                    <h3 className="text-xl font-bold">Take Profile Photo</h3>
+                    <button onClick={onClose} className="text-gray-400 hover:text-white">✕</button>
+                </div>
+                <div className="relative aspect-video bg-black">
+                    <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
+                    <canvas ref={canvasRef} className="hidden" />
+                </div>
+                <div className="p-6 flex justify-between gap-4">
+                    <Button onClick={onClose} variant="outline" className="flex-1">Cancel</Button>
+                    <Button onClick={capture} className="flex-1 bg-secondary hover:shadow-[0_0_20px_rgba(79,70,229,0.4)]">Capture</Button>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 export default function ProfileSettingsPage() {
     const router = useRouter();
@@ -18,6 +79,8 @@ export default function ProfileSettingsPage() {
     const [showSuccess, setShowSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const [showCamera, setShowCamera] = useState(false);
+    const [showChoice, setShowChoice] = useState(false);
 
     // Verification State
     const [showVerification, setShowVerification] = useState(false);
@@ -38,7 +101,7 @@ export default function ProfileSettingsPage() {
         gender: "",
         date_of_birth: "",
         bio: "",
-        profile_image: ""
+        profile_image: "" as any
     });
 
     useEffect(() => {
@@ -68,6 +131,10 @@ export default function ProfileSettingsPage() {
         if (error) setError(null);
     };
 
+    const handleChoiceClick = () => {
+        setShowChoice(true);
+    };
+
     const handleImageClick = () => {
         fileInputRef.current?.click();
     };
@@ -79,10 +146,15 @@ export default function ProfileSettingsPage() {
             reader.onloadend = () => {
                 const base64String = reader.result as string;
                 setPreviewImage(base64String);
-                setFormData(prev => ({ ...prev, profile_image: base64String }));
+                setFormData(prev => ({ ...prev, profile_image: file })); // Send actual file if possible, or base64
             };
             reader.readAsDataURL(file);
         }
+    };
+
+    const handleCapture = (image: string) => {
+        setPreviewImage(image);
+        setFormData(prev => ({ ...prev, profile_image: image }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -91,14 +163,23 @@ export default function ProfileSettingsPage() {
         setError(null);
 
         try {
-            const response = await profileApi.updateProfile(formData);
+            const data = new FormData();
+            Object.entries(formData).forEach(([key, value]) => {
+                if (key === 'profile_image') {
+                    if (value instanceof File) {
+                        data.append(key, value);
+                    } else if (typeof value === 'string' && value.length > 0) {
+                        data.append(key, value);
+                    }
+                } else {
+                    data.append(key, value || "");
+                }
+            });
+
+            const response = await profileApi.updateProfile(data);
 
             if (response.user) {
-                // Flatten user data to match AuthContext User interface if needed, 
-                // but the backend returns user with profile loaded.
-                // Our AuthContext User interface might need adjustment to handle the nested profile.
                 updateUser(response.user);
-
                 setShowSuccess(true);
                 setTimeout(() => setShowSuccess(false), 5000);
             }
@@ -150,6 +231,55 @@ export default function ProfileSettingsPage() {
         <div className="min-h-screen bg-dark text-white font-sans">
             <Header />
 
+            {showCamera && (
+                <CameraModal 
+                    onCapture={handleCapture}
+                    onClose={() => setShowCamera(false)}
+                />
+            )}
+
+            {showChoice && (
+                <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={() => setShowChoice(false)}>
+                    <div className="bg-dark-light border border-white/10 rounded-3xl p-8 max-w-sm w-full animate-fadeIn" onClick={e => e.stopPropagation()}>
+                        <h3 className="text-xl font-bold mb-6 text-center">Change Profile Photo</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    handleImageClick();
+                                    setShowChoice(false);
+                                }}
+                                className="flex flex-col items-center justify-center gap-4 bg-white/5 border border-white/10 py-8 rounded-2xl hover:bg-white/10 transition-all group"
+                            >
+                                <div className="w-12 h-12 bg-secondary/20 rounded-full flex items-center justify-center group-hover:bg-secondary/30 transition-colors">
+                                    <Upload size={24} className="text-secondary" />
+                                </div>
+                                <span className="font-bold tracking-tight">Browse Files</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setShowCamera(true);
+                                    setShowChoice(false);
+                                }}
+                                className="flex flex-col items-center justify-center gap-4 bg-white/5 border border-white/10 py-8 rounded-2xl hover:bg-white/10 transition-all group"
+                            >
+                                <div className="w-12 h-12 bg-secondary/20 rounded-full flex items-center justify-center group-hover:bg-secondary/30 transition-colors">
+                                    <Camera size={24} className="text-secondary" />
+                                </div>
+                                <span className="font-bold tracking-tight">Take Photo</span>
+                            </button>
+                        </div>
+                        <button 
+                            onClick={() => setShowChoice(false)}
+                            className="w-full mt-6 py-3 text-gray-500 hover:text-white transition-colors text-sm font-medium"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            )}
+
             <main className="max-w-5xl mx-auto px-6 pt-32 pb-20">
                 {/* PAGE HEADER */}
                 <div className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -172,7 +302,7 @@ export default function ProfileSettingsPage() {
                         <div className="bg-dark-light/30 border border-white/5 rounded-3xl p-8 flex flex-col items-center text-center">
                             <div
                                 className="relative w-40 h-40 rounded-full overflow-hidden mb-6 group cursor-pointer border-4 border-secondary/20 shadow-2xl shadow-secondary/10"
-                                onClick={handleImageClick}
+                                onClick={handleChoiceClick}
                             >
                                 {previewImage ? (
                                     <img
@@ -189,6 +319,7 @@ export default function ProfileSettingsPage() {
                                     <Camera className="text-white" size={32} />
                                 </div>
                             </div>
+
                             <input
                                 type="file"
                                 ref={fileInputRef}

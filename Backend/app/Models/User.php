@@ -34,7 +34,6 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected $fillable = [
         'first_name',
-        'middle_name',
         'last_name',
         'email',
         'password',
@@ -44,7 +43,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * The accessors to append to the model's array form.
      */
-    protected $appends = ['name'];
+    protected $appends = ['name', 'profile_image'];
 
     public function profile()
     {
@@ -56,7 +55,15 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function getNameAttribute()
     {
-        return trim("{$this->first_name} {$this->middle_name} {$this->last_name}");
+        return trim("{$this->first_name} {$this->last_name}");
+    }
+
+    /**
+     * Get the user's profile image.
+     */
+    public function getProfileImageAttribute()
+    {
+        return $this->profile?->profile_image;
     }
 
     protected $hidden = [
