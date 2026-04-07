@@ -141,7 +141,7 @@ const PublicMissingPersonPage = () => {
                         <div className="flex flex-col items-start md:items-end gap-6">
                             <div className="flex flex-wrap items-center gap-3">
                                 <PostActions ownerId={report.user_id} postId={person.id} />
-                                <FlagButton ownerId={report.user_id} personName={person.fullName} />
+                                <FlagButton ownerId={report.user_id} personName={person.fullName} postId={person.id} />
                             </div>
                             
                             <button 

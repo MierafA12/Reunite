@@ -30,6 +30,8 @@ class MissingReport extends Model
         'offer_reward',
         'reward_amount',
         'status',
+        'is_flagged',
+        'flags_count',
     ];
 
     public function user()

@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/public/reports', [MissingReportController::class, 'publicIndex']);
 Route::get('/public/reports/{id}', [MissingReportController::class, 'publicShow']);
+Route::post('/public/reports/{id}/flag', [MissingReportController::class, 'flag']);
 
 
 Route::middleware(['auth:sanctum'])->group(function () {
@@ -24,4 +25,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/admin/found-reports', [FoundReportController::class, 'adminIndex']);
     Route::get('/admin/found-reports/{id}', [FoundReportController::class, 'adminShow']);
     Route::post('/admin/found-reports/{id}/review', [FoundReportController::class, 'adminReview']);
+
+    // Flagged Reports admin
+    Route::get('/admin/flagged-reports', [MissingReportController::class, 'adminFlaggedIndex']);
 });
