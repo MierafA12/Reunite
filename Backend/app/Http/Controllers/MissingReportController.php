@@ -239,4 +239,19 @@ class MissingReportController extends Controller
 
         return response()->json($reports);
     }
+    /**
+     * Get system statistics for the public homepage.
+     */
+    public function getPublicStats()
+    {
+        $casesReported = MissingReport::where('status', '!=', 'rejected')->count();
+        $peopleFound = MissingReport::where('status', 'found')->count();
+        $communities = \App\Models\User::count();
+
+        return response()->json([
+            'cases_reported' => $casesReported,
+            'people_found' => $peopleFound,
+            'communities' => $communities,
+        ]);
+    }
 }
