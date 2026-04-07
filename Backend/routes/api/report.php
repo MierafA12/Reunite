@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/public/reports', [MissingReportController::class, 'publicIndex']);
 Route::get('/public/reports/{id}', [MissingReportController::class, 'publicShow']);
 Route::post('/public/reports/{id}/flag', [MissingReportController::class, 'flag']);
+Route::get('/public/stats', [MissingReportController::class, 'getPublicStats']);
 
 
 Route::middleware(['auth:sanctum'])->group(function () {
