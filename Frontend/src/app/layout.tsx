@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "./context/AuthContext";
+import { ToastProvider } from "./context/ToastContext";
+import { ConfirmProvider } from "./context/ConfirmContext";
 
 export const metadata: Metadata = {
     title: "Missing Finder - Reunite Families",
@@ -16,7 +18,11 @@ export default function RootLayout({
         <html lang="en">
             <body className="antialiased">
                 <AuthProvider>
-                    {children}
+                    <ToastProvider>
+                        <ConfirmProvider>
+                            {children}
+                        </ConfirmProvider>
+                    </ToastProvider>
                 </AuthProvider>
             </body>
         </html>
