@@ -120,6 +120,10 @@ export const reportApi = {
         const response = await api.get("/admin/flagged-reports");
         return response.data;
     },
+    getPublicStats: async () => {
+        const response = await api.get("/public/stats");
+        return response.data;
+    },
 };
 
 export const foundReportApi = {

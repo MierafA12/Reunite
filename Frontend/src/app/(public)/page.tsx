@@ -8,9 +8,28 @@ import ShortNumberPage from "@/app/components/ui/shortNumber";
 import Footer from "@/app/components/layout/footer";
 import Link from "next/link";
 import { useAuth } from "@/app/context/AuthContext";
+import { useEffect, useState } from "react";
+import { reportApi } from "@/app/lib/api";
 
 const Home = () => {
     const { isLoggedIn } = useAuth();
+    const [stats, setStats] = useState({
+        cases_reported: 0,
+        people_found: 0,
+        communities: 0
+    });
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const data = await reportApi.getPublicStats();
+                setStats(data);
+            } catch (error) {
+                console.error("Failed to fetch statistics:", error);
+            }
+        };
+        fetchStats();
+    }, []);
 
     return (
         <>
@@ -53,9 +72,18 @@ const Home = () => {
                         </div>
 
                         <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl">
-                            <StatCard title="1,200+" subtitle="Cases Reported" />
-                            <StatCard title="680+" subtitle="People Found" />
-                            <StatCard title="50+" subtitle="Communities" />
+                            <StatCard 
+                                title={`${stats.cases_reported.toLocaleString()}${stats.cases_reported > 0 ? "+" : ""}`} 
+                                subtitle="Cases Reported" 
+                            />
+                            <StatCard 
+                                title={`${stats.people_found.toLocaleString()}${stats.people_found > 0 ? "+" : ""}`} 
+                                subtitle="People Found" 
+                            />
+                            <StatCard 
+                                title={`${stats.communities.toLocaleString()}${stats.communities > 0 ? "+" : ""}`} 
+                                subtitle="Communities" 
+                            />
                         </div>
 
                     </div>
