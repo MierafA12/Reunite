@@ -112,6 +112,14 @@ export const reportApi = {
         const response = await api.delete(`/reports/${id}`);
         return response.data;
     },
+    flagReport: async (id: string, data: { reason: string }) => {
+        const response = await api.post(`/public/reports/${id}/flag`, data);
+        return response.data;
+    },
+    adminGetFlagged: async () => {
+        const response = await api.get("/admin/flagged-reports");
+        return response.data;
+    },
 };
 
 export const foundReportApi = {
