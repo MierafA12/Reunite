@@ -4,9 +4,11 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import VerifyCodePage from "@/app/components/page/verify";
 import { authApi } from "@/app/lib/api";
+import { useToast } from "@/app/context/ToastContext";
 
 export default function VerifyPage() {
     const router = useRouter();
+    const { showToast } = useToast();
     const searchParams = useSearchParams();
     const [isVerifying, setIsVerifying] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -82,7 +84,7 @@ export default function VerifyPage() {
             } else if (verificationType === "forgot-password") {
                 await authApi.forgotPassword({ email });
             }
-            alert("A new verification code has been sent to your email.");
+            showToast("A new verification code has been sent to your email.", "success");
         } catch (err: any) {
             console.error("Resend failed:", err);
             setError(err.response?.data?.message || "Failed to resend code. Please try again.");

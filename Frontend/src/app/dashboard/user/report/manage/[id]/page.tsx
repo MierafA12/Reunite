@@ -7,6 +7,8 @@ import { useRouter, useParams } from "next/navigation";
 import Button from "@/app/components/ui/Button";
 import { reportApi } from "@/app/lib/api";
 import Link from "next/link";
+import { useToast } from "@/app/context/ToastContext";
+import { useConfirm } from "@/app/context/ConfirmContext";
 
 export default function ManageReportPage() {
     const router = useRouter();
@@ -16,6 +18,8 @@ export default function ManageReportPage() {
     const [isDeleting, setIsDeleting] = useState(false);
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const { showToast } = useToast();
+    const { confirm } = useConfirm();
 
     useEffect(() => {
         const fetchReport = async () => {
@@ -39,15 +43,23 @@ export default function ManageReportPage() {
     };
 
     const handleDelete = async () => {
-        if (!confirm("Are you sure you want to delete this report? This action cannot be undone.")) return;
+        const isConfirmed = await confirm({
+            title: "Delete Report",
+            message: "Are you sure you want to delete this report? This action cannot be undone and the case will be removed from the public database.",
+            confirmText: "Delete Case",
+            variant: "danger"
+        });
+
+        if (!isConfirmed) return;
         
         setIsDeleting(true);
         try {
             await reportApi.deleteReport(id as string);
+            showToast("Report deleted successfully.", "success");
             router.push("/dashboard/user");
         } catch (err: any) {
             console.error("Failed to delete report:", err);
-            alert("Failed to delete report. Please try again.");
+            showToast("Failed to delete report. Please try again.", "error");
             setIsDeleting(false);
         }
     };
