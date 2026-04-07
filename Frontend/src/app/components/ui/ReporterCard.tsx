@@ -5,6 +5,7 @@ import { ShieldCheck, Lock } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/app/context/AuthContext";
 import Button from "./Button";
+import { useToast } from "@/app/context/ToastContext";
 
 interface ReporterCardProps {
     name: string;
@@ -25,6 +26,7 @@ export default function ReporterCard({
     isVerified = true
 }: ReporterCardProps): React.ReactNode {
     const { isLoggedIn, user } = useAuth();
+    const { showToast } = useToast();
     const isOwner = isLoggedIn && user?.id == ownerId;
 
 
@@ -75,7 +77,7 @@ export default function ReporterCard({
                     <Button
                         variant="secondary"
                         className="w-full py-4 rounded-2xl font-bold mb-4 shadow-lg shadow-secondary/20 hover:scale-[1.02] transition-all"
-                        onClick={() => alert("Initiating secret connection with family...")}
+                        onClick={() => showToast("Initiating secure connection with family...", "info")}
                     >
                         Connect Privately
                     </Button>

@@ -8,6 +8,7 @@ import Modal from "./Modal";
 import Button from "./Button";
 import Link from "next/link";
 import { reportApi } from "@/app/lib/api";
+import { useToast } from "@/app/context/ToastContext";
 
 export default function FlagButton({ ownerId, personName, postId }: { ownerId?: string | number; personName?: string, postId?: string }): React.ReactNode {
 
@@ -15,6 +16,7 @@ export default function FlagButton({ ownerId, personName, postId }: { ownerId?: 
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const router = useRouter();
+    const { showToast } = useToast();
 
     const [isFlagged, setIsFlagged] = useState<boolean>(false);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -60,10 +62,10 @@ export default function FlagButton({ ownerId, personName, postId }: { ownerId?: 
             await reportApi.flagReport(postId, { reason });
             setIsFlagged(true);
             setIsModalOpen(false);
-            alert("This report has been flagged for review. Thank you for keeping our community safe.");
+            showToast("Report flagged for review. Thank you for your help.", "success");
         } catch (error) {
             console.error("Failed to flag report:", error);
-            alert("Failed to submit flag. Please try again.");
+            showToast("Failed to submit flag. Please try again.", "error");
         } finally {
             setIsSubmitting(false);
         }
